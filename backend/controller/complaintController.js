@@ -1,5 +1,11 @@
 import Complaint from "../models/complaint.js";
 import User from "../models/user.js";
+import {
+  sendComplaintNotificationToAdmin,
+  sendComplaintAcceptedEmail,
+  sendComplaintRejectedEmail,
+  sendComplaintResolvedEmail,
+} from "../utils/emailService.js";
 
 // Submit a new complaint
 export const submitComplaint = async (req, res) => {
@@ -55,6 +61,15 @@ export const submitComplaint = async (req, res) => {
     // Populate creator details for response
     await newComplaint.populate("createdBy", "name email role department");
     await newComplaint.populate("assignedTo", "name email role");
+
+    // Send email notification to assigned admin
+    if (newComplaint.assignedTo && newComplaint.assignedTo.email) {
+      await sendComplaintNotificationToAdmin(
+        newComplaint,
+        newComplaint.assignedTo.email,
+        newComplaint.assignedTo.name
+      );
+    }
 
     res.status(201).json({
       success: true,
@@ -256,6 +271,19 @@ export const rejectComplaint = async (req, res) => {
 
     await complaint.save();
 
+    // Populate user details for email
+    await complaint.populate("createdBy", "name email");
+
+    // Send email notification to user
+    if (complaint.createdBy && complaint.createdBy.email) {
+      await sendComplaintRejectedEmail(
+        complaint,
+        complaint.createdBy.email,
+        complaint.createdBy.name,
+        reason
+      );
+    }
+
     res.status(200).json({
       success: true,
       message: "Complaint rejected successfully",
@@ -315,6 +343,18 @@ export const acceptComplaint = async (req, res) => {
     complaint.status = "Accepted";
 
     await complaint.save();
+
+    // Populate user details for email
+    await complaint.populate("createdBy", "name email");
+
+    // Send email notification to user
+    if (complaint.createdBy && complaint.createdBy.email) {
+      await sendComplaintAcceptedEmail(
+        complaint,
+        complaint.createdBy.email,
+        complaint.createdBy.name
+      );
+    }
 
     res.status(200).json({
       success: true,
@@ -380,6 +420,19 @@ export const resolveComplaint = async (req, res) => {
     if (response) complaint.response = response;
 
     await complaint.save();
+
+    // Populate user details for email
+    await complaint.populate("createdBy", "name email");
+
+    // Send email notification to user
+    if (complaint.createdBy && complaint.createdBy.email) {
+      await sendComplaintResolvedEmail(
+        complaint,
+        complaint.createdBy.email,
+        complaint.createdBy.name,
+        response
+      );
+    }
 
     res.status(200).json({
       success: true,
