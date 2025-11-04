@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 export const AppContext = createContext();
 
@@ -88,6 +89,7 @@ const AppContextProvider = (props) => {
     setUser(null);
     localStorage.removeItem("token");
     delete axios.defaults.headers.common["Authorization"];
+    toast.info("You have been logged out successfully. See you soon!");
   };
 
   const value = {

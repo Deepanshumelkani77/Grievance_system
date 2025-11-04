@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import assets from "../assets/assets";
+import { toast } from 'react-toastify';
 
 const Login = ({ setShowSignup }) => {
   const { login } = useContext(AppContext);
@@ -15,7 +16,9 @@ const Login = ({ setShowSignup }) => {
     setLoading(true);
 
     if (!email || !password) {
-      setError("Please fill in all fields");
+      const errorMsg = "Please fill in all fields";
+      setError(errorMsg);
+      toast.error(errorMsg);
       setLoading(false);
       return;
     }
@@ -24,13 +27,17 @@ const Login = ({ setShowSignup }) => {
 
     if (!result.success) {
       setError(result.message);
+      toast.error(result.message);
+    } else {
+      toast.success("Login successful! Welcome back.");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex flex-col bg-white">
+      <div className="flex-1 flex bg-white">
       {/* Left side - College Branding */}
       <div className="hidden bg-gray-100 lg:flex lg:w-1/2  min-h-screen items-center justify-center p-12 border-r border-gray-200">
         <div className="text-center bg-gray-100 space-y-8">
@@ -229,6 +236,9 @@ const Login = ({ setShowSignup }) => {
           </div>
         </div>
       </div>
+      </div>
+
+    
     </div>
   );
 };

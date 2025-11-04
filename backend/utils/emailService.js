@@ -111,18 +111,18 @@ export const sendComplaintResolvedEmail = async (complaint, userEmail, userName,
   const mailOptions = {
     from: "deepumelkani123@gmail.com",
     to: userEmail,
-    subject: "Your Complaint Has Been Resolved",
+    subject: "Your Complaint Has Been Completed",
     html: `
-      <h2>Complaint Resolved</h2>
+      <h2>Complaint Completed</h2>
       <p>Dear ${userName},</p>
-      <p>Your complaint has been successfully resolved.</p>
+      <p>Your complaint has been successfully completed and resolved.</p>
       
       <h3>Complaint Details:</h3>
       <p><strong>Title:</strong> ${complaint.title}</p>
-      <p><strong>Status:</strong> <span style="color: purple;">Resolved</span></p>
+      <p><strong>Status:</strong> <span style="color: green;">Completed</span></p>
       ${actionTaken ? `<p><strong>Action Taken:</strong> ${actionTaken}</p>` : ""}
       <p><strong>Submitted on:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</p>
-      <p><strong>Resolved on:</strong> ${new Date().toLocaleDateString()}</p>
+      <p><strong>Completed on:</strong> ${new Date().toLocaleDateString()}</p>
       
       <p>Thank you for bringing this matter to our attention.</p>
       
@@ -132,8 +132,42 @@ export const sendComplaintResolvedEmail = async (complaint, userEmail, userName,
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log("Resolution email sent to user:", userEmail);
+    console.log("Completion email sent to user:", userEmail);
   } catch (error) {
-    console.error("Error sending resolution email:", error);
+    console.error("Error sending completion email:", error);
+  }
+};
+
+// Send email to director when complaint is escalated
+export const sendComplaintEscalatedToDirectorEmail = async (complaint, directorEmail, directorName, escalatedBy) => {
+  const mailOptions = {
+    from: "deepumelkani123@gmail.com",
+    to: directorEmail,
+    subject: `Escalated Complaint - Requires Your Attention`,
+    html: `
+      <h2>Complaint Escalated to You</h2>
+      <p>Dear ${directorName},</p>
+      <p>A complaint has been escalated to you for review and resolution.</p>
+      
+      <h3>Complaint Details:</h3>
+      <p><strong>Title:</strong> ${complaint.title}</p>
+      <p><strong>Type:</strong> ${complaint.type.toUpperCase()}</p>
+      <p><strong>Description:</strong> ${complaint.description}</p>
+      <p><strong>Status:</strong> <span style="color: orange;">Escalated</span></p>
+      <p><strong>Escalated by:</strong> ${escalatedBy}</p>
+      <p><strong>Original submitter:</strong> ${complaint.createdBy.name} (${complaint.createdBy.email})</p>
+      <p><strong>Submitted on:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</p>
+      
+      <p>This complaint requires your immediate attention. Please log in to the BIAS Grievance Portal to review and resolve it.</p>
+      
+      <p>Best regards,<br>BIAS Grievance System</p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Escalation email sent to director:", directorEmail);
+  } catch (error) {
+    console.error("Error sending escalation email to director:", error);
   }
 };

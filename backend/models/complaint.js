@@ -12,7 +12,7 @@ const complaintSchema = new mongoose.Schema({
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   status: {
     type: String,
-    enum: ["Pending","Accepted","Rejected", "In Progress", "Resolved", "Escalated"],
+    enum: ["Pending","Accepted","Rejected", "In Progress", "Resolved", "Escalated", "Completed"],
     default: "Pending"
   },
   response: String,

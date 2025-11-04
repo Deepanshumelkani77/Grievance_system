@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { toast } from 'react-toastify';
 
 const ComplaintForm = ({ onClose, onSubmitSuccess }) => {
   const { user, backendUrl } = useContext(AppContext);
@@ -42,13 +43,18 @@ const ComplaintForm = ({ onClose, onSubmitSuccess }) => {
       const data = await response.json();
 
       if (data.success) {
+        toast.success("Complaint submitted successfully!");
         onSubmitSuccess && onSubmitSuccess(data.complaint);
         onClose();
       } else {
-        setError(data.message || "Failed to submit complaint");
+        const errorMsg = data.message || "Failed to submit complaint";
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     } catch (err) {
-      setError("Error submitting complaint. Please try again.");
+      const errorMsg = "Error submitting complaint. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

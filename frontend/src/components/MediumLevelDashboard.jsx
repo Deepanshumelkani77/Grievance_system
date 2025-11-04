@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import assets from "../assets/assets";
+import { toast } from 'react-toastify';
 
 const MediumLevelDashboard = () => {
   const { user, logout, backendUrl } = useContext(AppContext);
@@ -50,14 +51,14 @@ const MediumLevelDashboard = () => {
       );
 
       if (response.data.success) {
-        alert("Complaint rejected successfully!");
+        toast.success("Complaint rejected successfully!");
         fetchComplaints(); // Refresh the list
       } else {
-        alert(response.data.message || "Failed to reject complaint");
+        toast.error(response.data.message || "Failed to reject complaint");
       }
     } catch (error) {
       console.error("Error rejecting complaint:", error);
-      alert("Error rejecting complaint. Please try again.");
+      toast.error("Error rejecting complaint. Please try again.");
     }
   };
 
@@ -73,14 +74,14 @@ const MediumLevelDashboard = () => {
       );
 
       if (response.data.success) {
-        alert("Complaint accepted successfully!");
+        toast.success("Complaint accepted successfully!");
         fetchComplaints(); // Refresh the list
       } else {
-        alert(response.data.message || "Failed to accept complaint");
+        toast.error(response.data.message || "Failed to accept complaint");
       }
     } catch (error) {
       console.error("Error accepting complaint:", error);
-      alert("Error accepting complaint. Please try again.");
+      toast.error("Error accepting complaint. Please try again.");
     }
   };
 
@@ -98,14 +99,14 @@ const MediumLevelDashboard = () => {
       );
 
       if (res.data.success) {
-        alert("Complaint resolved successfully!");
+        toast.success("Complaint resolved successfully!");
         fetchComplaints(); // Refresh the list
       } else {
-        alert(res.data.message || "Failed to resolve complaint");
+        toast.error(res.data.message || "Failed to resolve complaint");
       }
     } catch (error) {
       console.error("Error resolving complaint:", error);
-      alert("Error resolving complaint. Please try again.");
+      toast.error("Error resolving complaint. Please try again.");
     }
   };
 
@@ -121,14 +122,14 @@ const MediumLevelDashboard = () => {
       );
 
       if (response.data.success) {
-        alert("Complaint escalated to Director successfully!");
+        toast.success("Complaint escalated to Director successfully!");
         fetchComplaints(); // Refresh the list
       } else {
-        alert(response.data.message || "Failed to escalate complaint");
+        toast.error(response.data.message || "Failed to escalate complaint");
       }
     } catch (error) {
       console.error("Error escalating complaint:", error);
-      alert("Error escalating complaint. Please try again.");
+      toast.error("Error escalating complaint. Please try again.");
     }
   };
 
@@ -138,8 +139,21 @@ const MediumLevelDashboard = () => {
     pending: complaints.filter(c => c.status === "Pending").length,
     accepted: complaints.filter(c => c.status === "Accepted").length,
     rejected: complaints.filter(c => c.status === "Rejected").length,
-    resolved: complaints.filter(c => c.status === "Resolved").length,
+    completed: complaints.filter(c => c.status === "Completed").length,
   };
+
+  // Sort complaints: Completed and Rejected at bottom, others by date (older first)
+  const sortedComplaints = [...complaints].sort((a, b) => {
+    const aIsFinished = a.status === "Completed" || a.status === "Rejected";
+    const bIsFinished = b.status === "Completed" || b.status === "Rejected";
+    
+    // If one is finished (completed/rejected) and the other is not, finished goes to bottom
+    if (aIsFinished && !bIsFinished) return 1;
+    if (!aIsFinished && bIsFinished) return -1;
+    
+    // Otherwise, sort by date (older first - ascending order)
+    return new Date(a.createdAt) - new Date(b.createdAt);
+  });
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -172,13 +186,13 @@ const MediumLevelDashboard = () => {
         </div>
       </nav>
 
-      <div className="max-w-8xl mx-auto px-6 lg:px-20 py-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-20 py-4 sm:py-8">
         {/* Welcome Section */}
-        <div className="bg-[#021189] rounded-2xl p-8 mb-8 text-white shadow-lg">
-          <div className="flex items-center justify-between">
+        <div className="bg-[#021189] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 text-white shadow-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Welcome, {user?.role === "hod" ? "HOD" : user?.role === "warden" ? "Warden" : "Registrar"}! 👔</h1>
-              <p className="text-blue-100 text-lg">Manage and resolve assigned grievances</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">Welcome, {user?.role === "hod" ? "HOD" : user?.role === "warden" ? "Warden" : "Registrar"}! 👔</h1>
+              <p className="text-blue-100 text-sm sm:text-base lg:text-lg">Manage and resolve assigned grievances</p>
             </div>
             <div className="hidden md:flex items-center gap-4">
               <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
@@ -194,92 +208,92 @@ const MediumLevelDashboard = () => {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📨</span>
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <span className="text-xl sm:text-2xl">📨</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-gray-800">{stats.total}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.total}</p>
               </div>
             </div>
-            <h3 className="text-xl lg:text-2xl font-medium text-black">Assigned to Me</h3>
-            <p className="text-xs lg:text-lg text-gray-600 mt-1">Total assignments</p>
+            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Assigned to Me</h3>
+            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Total assignments</p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">✅</span>
+          <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-xl sm:text-2xl">✅</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-green-600">{stats.accepted}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.accepted}</p>
               </div>
             </div>
-            <h3 className="text-xl lg:text-2xl font-medium text-black">Accepted</h3>
-            <p className="text-xs lg:text-lg text-gray-600 mt-1">Confirmed complaints</p>
+            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Accepted</h3>
+            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Confirmed complaints</p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">❌</span>
+          <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <span className="text-xl sm:text-2xl">❌</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-red-600">{stats.rejected}</p>
               </div>
             </div>
-            <h3 className="text-xl lg:text-2xl font-medium text-black">Rejected</h3>
-            <p className="text-xs lg:text-lg text-gray-600 mt-1">Not approved</p>
+            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Rejected</h3>
+            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Not approved</p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🎉</span>
+          <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <span className="text-xl sm:text-2xl">🎉</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-purple-600">{stats.resolved}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-emerald-600">{stats.completed}</p>
               </div>
             </div>
-            <h3 className="text-xl lg:text-2xl font-medium text-black">Resolved</h3>
-            <p className="text-xs lg:text-lg text-gray-600 mt-1">Successfully closed</p>
+            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Completed</h3>
+            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Successfully closed</p>
           </div>
         </div>
 
         {/* Responsibilities Section */}
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 mb-8">
-          <h2 className="text-xl lg:text-4xl font-bold text-gray-800 mb-2">Your Responsibilities</h2>
-          <p className="text-gray-600 mb-6">Manage {getComplaintType()} complaints efficiently</p>
+        <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm border border-gray-200 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">Your Responsibilities</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Manage {getComplaintType()} complaints efficiently</p>
           <ul className="list-none p-0 m-0 space-y-3">
-            <li className="py-3 text-sm lg:text-lg text-gray-700 border-b border-gray-100 flex items-start gap-3">
-              <span className="text-xl flex-shrink-0">📋</span>
+            <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 border-b border-gray-100 flex items-start gap-2 sm:gap-3">
+              <span className="text-base sm:text-lg flex-shrink-0">📋</span>
               <span>Handle <strong>{getComplaintType()}</strong> complaints</span>
             </li>
-            <li className="py-3 text-sm lg:text-lg text-gray-700 border-b border-gray-100 flex items-start gap-3">
-              <span className="text-xl flex-shrink-0">✅</span>
-              <span>Update complaint status (Pending → In Progress → Resolved)</span>
+            <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 border-b border-gray-100 flex items-start gap-2 sm:gap-3">
+              <span className="text-base sm:text-lg flex-shrink-0">✅</span>
+              <span>Update complaint status (Pending → Accepted → Completed)</span>
             </li>
-            <li className="py-3 text-sm lg:text-lg text-gray-700 border-b border-gray-100 flex items-start gap-3">
-              <span className="text-xl flex-shrink-0">🔼</span>
+            <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 border-b border-gray-100 flex items-start gap-2 sm:gap-3">
+              <span className="text-base sm:text-lg flex-shrink-0">🔼</span>
               <span>Escalate unresolved issues to Director</span>
             </li>
-            <li className="py-3 text-sm lg:text-lg text-gray-700 flex items-start gap-3">
-              <span className="text-xl flex-shrink-0">💬</span>
+            <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 flex items-start gap-2 sm:gap-3">
+              <span className="text-base sm:text-lg flex-shrink-0">💬</span>
               <span>Provide responses and solutions to complainants</span>
             </li>
           </ul>
         </div>
 
         {/* Complaints List */}
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
             <div>
-              <h2 className="text-2xl lg:text-4xl font-bold text-gray-800">Complaints Assigned to You</h2>
-              <p className="text-sm lg:text-lg text-gray-500 mt-1">Review and manage your assignments</p>
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800">🔼 Complaints Assigned to You</h2>
+              <p className="text-xs sm:text-sm lg:text-base text-gray-500 mt-1">Review and manage your assignments</p>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-xs sm:text-sm text-gray-500">
               {complaints.length} {complaints.length === 1 ? 'complaint' : 'complaints'}
             </div>
           </div>
@@ -301,14 +315,14 @@ const MediumLevelDashboard = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {complaints.map((complaint) => (
+              {sortedComplaints.map((complaint) => (
                 <div
                   key={complaint._id}
-                  className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-md hover:border-gray-300 transition-all"
+                  className="bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:shadow-md hover:border-gray-300 transition-all"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-2">{complaint.title}</h3>
+                  <div className="flex flex-col sm:flex-row justify-between items-start mb-3 sm:mb-4 gap-2">
+                    <div className="flex-1 w-full">
+                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">{complaint.title}</h3>
                       <p className="text-sm text-gray-600 mb-1">
                         From: <strong>{complaint.createdBy?.name}</strong> ({complaint.createdBy?.role})
                         {complaint.createdBy?.department && ` - ${complaint.createdBy.department}`}
@@ -325,13 +339,14 @@ const MediumLevelDashboard = () => {
                       complaint.status === "Accepted" ? "bg-green-100 text-green-700" :
                       complaint.status === "Rejected" ? "bg-red-100 text-red-700" :
                       complaint.status === "Escalated" ? "bg-pink-100 text-pink-700" :
+                      complaint.status === "Completed" ? "bg-emerald-100 text-emerald-700" :
                       "bg-purple-100 text-purple-700"
                     }`}>
                       {complaint.status}
                     </span>
                   </div>
                   
-                  <p className="text-gray-700 lg:text-lg mb-4 leading-relaxed">{complaint.description}</p>
+                  <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{complaint.description}</p>
                   
                   <div className="flex items-center gap-3 pt-3 border-t border-gray-200">
                     <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
@@ -395,6 +410,87 @@ const MediumLevelDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-[#021189] text-white mt-12">
+        <div className="max-w-8xl mx-auto px-6 lg:px-20 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* About Section */}
+            <div>
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <span className="text-2xl">🏛️</span>
+                BIAS Grievance Portal
+              </h3>
+              <p className="text-blue-100 text-sm leading-relaxed">
+                Birla Institute of Applied Sciences is committed to addressing student, teacher, and worker concerns efficiently and transparently.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
+                    <span>✅</span> Accept Complaints
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
+                    <span>❌</span> Reject Complaints
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
+                    <span>🔼</span> Escalate Issues
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
+                    <span>📊</span> View Reports
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">Contact Us</h3>
+              <ul className="space-y-3 text-sm text-blue-100">
+                <li className="flex items-start gap-2">
+                  <span className="text-lg">📍</span>
+                  <span>Birla Institute of Applied Sciences<br />Bhimtal, Uttarakhand</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">📧</span>
+                  <span>grievance@bias.edu.in</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">📞</span>
+                  <span>+91-XXXX-XXXXXX</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-blue-700 pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-3">
+              <p className="text-sm text-blue-100">
+                © {new Date().getFullYear()} Birla Institute of Applied Sciences. All rights reserved.
+              </p>
+              <div className="flex gap-6 text-sm text-blue-100">
+                <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+                <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                <a href="#" className="hover:text-white transition-colors">Support</a>
+              </div>
+            </div>
+            <div className="text-center text-sm text-blue-200">
+              <p>Developed by <span className="font-semibold text-white">Deepanshu Melkani</span> and <span className="font-semibold text-white">Divyanshu Amdola</span></p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -5,6 +5,8 @@ import Signup from "./components/Signup";
 import DirectorDashboard from "./components/DirectorDashboard";
 import MediumLevelDashboard from "./components/MediumLevelDashboard";
 import LowLevelDashboard from "./components/LowLevelDashboard";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const { user, loading } = useContext(AppContext);
@@ -60,7 +62,23 @@ const App = () => {
     }
   };
 
-  return <div>{renderDashboard()}</div>;
+  return (
+    <>
+      {renderDashboard()}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
+  );
 };
 
 export default App;

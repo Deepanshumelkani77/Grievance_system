@@ -5,6 +5,7 @@ import {
   sendComplaintAcceptedEmail,
   sendComplaintRejectedEmail,
   sendComplaintResolvedEmail,
+  sendComplaintEscalatedToDirectorEmail,
 } from "../utils/emailService.js";
 
 // Submit a new complaint
@@ -416,7 +417,7 @@ export const resolveComplaint = async (req, res) => {
     }
 
     // Resolve complaint
-    complaint.status = "Resolved";
+    complaint.status = "Completed";
     if (response) complaint.response = response;
 
     await complaint.save();
@@ -436,7 +437,7 @@ export const resolveComplaint = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Complaint resolved successfully",
+      message: "Complaint completed successfully",
       complaint,
     });
   } catch (error) {
@@ -504,6 +505,23 @@ export const escalateComplaint = async (req, res) => {
     complaint.escalatedTo = director._id;
 
     await complaint.save();
+
+    // Populate complaint details for email
+    await complaint.populate("createdBy", "name email role department");
+
+    // Get escalating user details
+    const escalatingUser = await User.findById(userId);
+    const escalatedBy = `${escalatingUser.name} (${escalatingUser.role.toUpperCase()})`;
+
+    // Send email notification to director
+    if (director.email) {
+      await sendComplaintEscalatedToDirectorEmail(
+        complaint,
+        director.email,
+        director.name,
+        escalatedBy
+      );
+    }
 
     res.status(200).json({
       success: true,

@@ -21,14 +21,14 @@ const seedData = async () => {
     const adminUsers = [
       {
         name: "Director",
-        email: "director@college.edu",
+        email: "heymayank69@gmail.com",
         password: hashedPassword,
         role: "director",
         department: "Administration",
       },
       {
         name: "HOD Computer Science",
-        email: "hod.cs@college.edu",
+        email: "hustlewithdev77@gmail.com",
         password: hashedPassword,
         role: "hod",
         department: "Computer Science",
