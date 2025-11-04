@@ -36,6 +36,79 @@ const MediumLevelDashboard = () => {
     }
   }, [user]);
 
+  // Reject complaint
+  const handleReject = async (complaintId) => {
+    const reason = prompt("Please provide a reason for rejection (optional):");
+    if (!confirm("Are you sure you want to reject this complaint?")) {
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${backendUrl}/api/complaints/${complaintId}/reject`,
+        { reason }
+      );
+
+      if (response.data.success) {
+        alert("Complaint rejected successfully!");
+        fetchComplaints(); // Refresh the list
+      } else {
+        alert(response.data.message || "Failed to reject complaint");
+      }
+    } catch (error) {
+      console.error("Error rejecting complaint:", error);
+      alert("Error rejecting complaint. Please try again.");
+    }
+  };
+
+  // Accept/Confirm complaint
+  const handleAccept = async (complaintId) => {
+    if (!confirm("Are you sure you want to accept this complaint?")) {
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${backendUrl}/api/complaints/${complaintId}/accept`
+      );
+
+      if (response.data.success) {
+        alert("Complaint accepted successfully!");
+        fetchComplaints(); // Refresh the list
+      } else {
+        alert(response.data.message || "Failed to accept complaint");
+      }
+    } catch (error) {
+      console.error("Error accepting complaint:", error);
+      alert("Error accepting complaint. Please try again.");
+    }
+  };
+
+  // Resolve complaint
+  const handleResolve = async (complaintId) => {
+    const response = prompt("Please provide resolution details (optional):");
+    if (!confirm("Are you sure you want to mark this complaint as resolved?")) {
+      return;
+    }
+
+    try {
+      const res = await axios.put(
+        `${backendUrl}/api/complaints/${complaintId}/resolve`,
+        { response }
+      );
+
+      if (res.data.success) {
+        alert("Complaint resolved successfully!");
+        fetchComplaints(); // Refresh the list
+      } else {
+        alert(res.data.message || "Failed to resolve complaint");
+      }
+    } catch (error) {
+      console.error("Error resolving complaint:", error);
+      alert("Error resolving complaint. Please try again.");
+    }
+  };
+
   // Escalate complaint to Director
   const handleEscalate = async (complaintId) => {
     if (!confirm("Are you sure you want to escalate this complaint to the Director?")) {
@@ -63,8 +136,8 @@ const MediumLevelDashboard = () => {
   const stats = {
     total: complaints.length,
     pending: complaints.filter(c => c.status === "Pending").length,
-    inProgress: complaints.filter(c => c.status === "In Progress").length,
-    escalated: complaints.filter(c => c.status === "Escalated").length,
+    accepted: complaints.filter(c => c.status === "Accepted").length,
+    rejected: complaints.filter(c => c.status === "Rejected").length,
     resolved: complaints.filter(c => c.status === "Resolved").length,
   };
 
@@ -137,37 +210,37 @@ const MediumLevelDashboard = () => {
 
           <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">⚙️</span>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">✅</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-blue-600">{stats.inProgress}</p>
+                <p className="text-3xl font-bold text-green-600">{stats.accepted}</p>
               </div>
             </div>
-            <h3 className="text-xl lg:text-2xl font-medium text-black">In Progress</h3>
-            <p className="text-xs lg:text-lg text-gray-600 mt-1">Being resolved</p>
+            <h3 className="text-xl lg:text-2xl font-medium text-black">Accepted</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1">Confirmed complaints</p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🔼</span>
+                <span className="text-2xl">❌</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-red-600">{stats.escalated}</p>
+                <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
               </div>
             </div>
-            <h3 className="text-xl lg:text-2xl font-medium text-black">Escalated</h3>
-            <p className="text-xs lg:text-lg text-gray-600 mt-1">Sent to Director</p>
+            <h3 className="text-xl lg:text-2xl font-medium text-black">Rejected</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1">Not approved</p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">✅</span>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">🎉</span>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-green-600">{stats.resolved}</p>
+                <p className="text-3xl font-bold text-purple-600">{stats.resolved}</p>
               </div>
             </div>
             <h3 className="text-xl lg:text-2xl font-medium text-black">Resolved</h3>
@@ -249,9 +322,10 @@ const MediumLevelDashboard = () => {
                     </div>
                     <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
                       complaint.status === "Pending" ? "bg-orange-100 text-orange-700" :
-                      complaint.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                      complaint.status === "Escalated" ? "bg-red-100 text-red-700" :
-                      "bg-green-100 text-green-700"
+                      complaint.status === "Accepted" ? "bg-green-100 text-green-700" :
+                      complaint.status === "Rejected" ? "bg-red-100 text-red-700" :
+                      complaint.status === "Escalated" ? "bg-pink-100 text-pink-700" :
+                      "bg-purple-100 text-purple-700"
                     }`}>
                       {complaint.status}
                     </span>
@@ -271,8 +345,31 @@ const MediumLevelDashboard = () => {
                     </span>
                   </div>
 
-                  {complaint.status !== "Escalated" && complaint.status !== "Resolved" && (
+                  {complaint.status === "Pending" && (
                     <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => handleAccept(complaint._id)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all inline-flex items-center gap-2"
+                      >
+                        <span>✅</span> Confirm
+                      </button>
+                      <button
+                        onClick={() => handleReject(complaint._id)}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all inline-flex items-center gap-2"
+                      >
+                        <span>❌</span> Reject
+                      </button>
+                    </div>
+                  )}
+
+                  {complaint.status === "Accepted" && (
+                    <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => handleResolve(complaint._id)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all inline-flex items-center gap-2"
+                      >
+                        <span>✅</span> Resolve
+                      </button>
                       <button
                         onClick={() => handleEscalate(complaint._id)}
                         className="px-4 py-2 bg-[#021189] text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all inline-flex items-center gap-2"

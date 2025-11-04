@@ -209,6 +209,193 @@ export const updateComplaintStatus = async (req, res) => {
   }
 };
 
+// Reject complaint (for medium-level users)
+export const rejectComplaint = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+    const userId = req.userId;
+    const userRole = req.userRole;
+    const { reason } = req.body;
+
+    // Only medium-level users can reject
+    if (!["hod", "registrar", "warden"].includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only HOD, Registrar, or Warden can reject complaints",
+      });
+    }
+
+    const complaint = await Complaint.findById(complaintId);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    // Check if user is assigned to this complaint
+    if (complaint.assignedTo?.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only reject complaints assigned to you",
+      });
+    }
+
+    // Check if complaint is in Pending status
+    if (complaint.status !== "Pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Only pending complaints can be rejected",
+      });
+    }
+
+    // Reject complaint
+    complaint.status = "Rejected";
+    if (reason) complaint.response = reason;
+
+    await complaint.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint rejected successfully",
+      complaint,
+    });
+  } catch (error) {
+    console.error("Reject complaint error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error rejecting complaint",
+      error: error.message,
+    });
+  }
+};
+
+// Accept/Confirm complaint (for medium-level users)
+export const acceptComplaint = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+    const userId = req.userId;
+    const userRole = req.userRole;
+
+    // Only medium-level users can accept
+    if (!["hod", "registrar", "warden"].includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only HOD, Registrar, or Warden can accept complaints",
+      });
+    }
+
+    const complaint = await Complaint.findById(complaintId);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    // Check if user is assigned to this complaint
+    if (complaint.assignedTo?.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only accept complaints assigned to you",
+      });
+    }
+
+    // Check if complaint is in Pending status
+    if (complaint.status !== "Pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Only pending complaints can be accepted",
+      });
+    }
+
+    // Accept complaint
+    complaint.status = "Accepted";
+
+    await complaint.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint accepted successfully",
+      complaint,
+    });
+  } catch (error) {
+    console.error("Accept complaint error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error accepting complaint",
+      error: error.message,
+    });
+  }
+};
+
+// Resolve complaint (for medium-level users)
+export const resolveComplaint = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+    const userId = req.userId;
+    const userRole = req.userRole;
+    const { response } = req.body;
+
+    // Only medium-level users and director can resolve
+    if (!["hod", "registrar", "warden", "director"].includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Only HOD, Registrar, Warden or Director can resolve complaints",
+      });
+    }
+
+    const complaint = await Complaint.findById(complaintId);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    // Check if user is assigned to this complaint or is director
+    const isAssigned = complaint.assignedTo?.toString() === userId;
+    const isDirector = userRole === "director";
+
+    if (!isAssigned && !isDirector) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only resolve complaints assigned to you",
+      });
+    }
+
+    // Check if complaint is Accepted or Escalated before resolving
+    if (complaint.status !== "Accepted" && complaint.status !== "Escalated") {
+      return res.status(400).json({
+        success: false,
+        message: "Only accepted or escalated complaints can be resolved",
+      });
+    }
+
+    // Resolve complaint
+    complaint.status = "Resolved";
+    if (response) complaint.response = response;
+
+    await complaint.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint resolved successfully",
+      complaint,
+    });
+  } catch (error) {
+    console.error("Resolve complaint error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error resolving complaint",
+      error: error.message,
+    });
+  }
+};
+
 // Escalate complaint to Director
 export const escalateComplaint = async (req, res) => {
   try {
@@ -238,6 +425,14 @@ export const escalateComplaint = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: "You can only escalate complaints assigned to you",
+      });
+    }
+
+    // Check if complaint is Accepted before escalating
+    if (complaint.status !== "Accepted") {
+      return res.status(400).json({
+        success: false,
+        message: "Only accepted complaints can be escalated",
       });
     }
 

@@ -223,9 +223,10 @@ const DirectorDashboard = () => {
                     </div>
                     <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
                       complaint.status === "Pending" ? "bg-orange-100 text-orange-700" :
-                      complaint.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                      complaint.status === "Escalated" ? "bg-red-100 text-red-700" :
-                      "bg-green-100 text-green-700"
+                      complaint.status === "Accepted" ? "bg-green-100 text-green-700" :
+                      complaint.status === "Rejected" ? "bg-red-100 text-red-700" :
+                      complaint.status === "Escalated" ? "bg-pink-100 text-pink-700" :
+                      "bg-purple-100 text-purple-700"
                     }`}>
                       {complaint.status}
                     </span>
