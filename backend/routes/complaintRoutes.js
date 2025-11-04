@@ -1,5 +1,5 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   submitComplaint,
   getMyComplaints,
   getAssignedComplaints,
@@ -9,8 +9,8 @@ import {
   acceptComplaint,
   resolveComplaint,
   escalateComplaint,
-} from "../controller/complaintController.js";
-import { authenticate, authorize } from "../middleware/authMiddleware.js";
+} = require("../controller/complaintController");
+const { authenticate, authorize } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -25,4 +25,4 @@ router.put("/:complaintId/accept", authenticate, authorize("hod", "registrar", "
 router.put("/:complaintId/resolve", authenticate, authorize("hod", "registrar", "warden", "director"), resolveComplaint);
 router.put("/:complaintId/escalate", authenticate, authorize("hod", "registrar", "warden"), escalateComplaint);
 
-export default router;
+module.exports = router;

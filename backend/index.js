@@ -1,12 +1,11 @@
-import dotenv from "dotenv";
+require("dotenv").config();
 // Load environment variables FIRST before any other imports
-dotenv.config();
 
-import express from "express";
-import cors from "cors";
-import mongoose from "mongoose";
-import authRoutes from "./routes/authRoutes.js";
-import complaintRoutes from "./routes/complaintRoutes.js";
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const authRoutes = require("./routes/authRoutes");
+const complaintRoutes = require("./routes/complaintRoutes");
 
 // App config
 const app = express();

@@ -1,15 +1,15 @@
-import Complaint from "../models/complaint.js";
-import User from "../models/user.js";
-import {
+const Complaint = require("../models/complaint");
+const User = require("../models/user");
+const {
   sendComplaintNotificationToAdmin,
   sendComplaintAcceptedEmail,
   sendComplaintRejectedEmail,
   sendComplaintResolvedEmail,
   sendComplaintEscalatedToDirectorEmail,
-} from "../utils/emailService.js";
+} = require("../utils/emailService");
 
 // Submit a new complaint
-export const submitComplaint = async (req, res) => {
+const submitComplaint = async (req, res) => {
   try {
     const { title, description, type } = req.body;
     const userId = req.userId;
@@ -88,7 +88,7 @@ export const submitComplaint = async (req, res) => {
 };
 
 // Get all complaints for the logged-in user
-export const getMyComplaints = async (req, res) => {
+const getMyComplaints = async (req, res) => {
   try {
     const userId = req.userId;
 
@@ -112,7 +112,7 @@ export const getMyComplaints = async (req, res) => {
 };
 
 // Get complaints assigned to a medium-level user (HOD, Registrar, Warden)
-export const getAssignedComplaints = async (req, res) => {
+const getAssignedComplaints = async (req, res) => {
   try {
     const userId = req.userId;
     const userRole = req.userRole;
@@ -144,7 +144,7 @@ export const getAssignedComplaints = async (req, res) => {
 };
 
 // Get all complaints (Director only)
-export const getAllComplaints = async (req, res) => {
+const getAllComplaints = async (req, res) => {
   try {
     const userRole = req.userRole;
 
@@ -177,7 +177,7 @@ export const getAllComplaints = async (req, res) => {
 };
 
 // Update complaint status
-export const updateComplaintStatus = async (req, res) => {
+const updateComplaintStatus = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const { status, response } = req.body;
@@ -226,7 +226,7 @@ export const updateComplaintStatus = async (req, res) => {
 };
 
 // Reject complaint (for medium-level users)
-export const rejectComplaint = async (req, res) => {
+const rejectComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const userId = req.userId;
@@ -301,7 +301,7 @@ export const rejectComplaint = async (req, res) => {
 };
 
 // Accept/Confirm complaint (for medium-level users)
-export const acceptComplaint = async (req, res) => {
+const acceptComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const userId = req.userId;
@@ -373,7 +373,7 @@ export const acceptComplaint = async (req, res) => {
 };
 
 // Resolve complaint (for medium-level users)
-export const resolveComplaint = async (req, res) => {
+const resolveComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const userId = req.userId;
@@ -451,7 +451,7 @@ export const resolveComplaint = async (req, res) => {
 };
 
 // Escalate complaint to Director
-export const escalateComplaint = async (req, res) => {
+const escalateComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const userId = req.userId;
@@ -536,4 +536,16 @@ export const escalateComplaint = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+module.exports = {
+  submitComplaint,
+  getMyComplaints,
+  getAssignedComplaints,
+  getAllComplaints,
+  updateComplaintStatus,
+  acceptComplaint,
+  rejectComplaint,
+  resolveComplaint,
+  escalateComplaint,
 };

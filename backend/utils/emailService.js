@@ -1,22 +1,20 @@
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
-// Debug: Log environment variables (remove after testing)
-console.log("EMAIL_USER:", process.env.EMAIL_USER ? "✓ Loaded" : "✗ Missing");
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "✓ Loaded" : "✗ Missing");
+
 
 // Create transporter
 const transporter = nodemailer.createTransport({
   service: "gmail", // or your email service
   auth: {
-    user: "deepumelkani123@gmail.com",
-    pass: "nafr fujq gmfv fpcp",
+    user: process.env.EMAIL_USER ,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 // Send email to admin when new complaint is submitted
-export const sendComplaintNotificationToAdmin = async (complaint, adminEmail, adminName) => {
+const sendComplaintNotificationToAdmin = async (complaint, adminEmail, adminName) => {
   const mailOptions = {
-    from: "deepumelkani123@gmail.com",
+    from: process.env.EMAIL_USER,
     to: adminEmail,
     subject: `New Complaint Submitted - ${complaint.type.toUpperCase()}`,
     html: `
@@ -46,9 +44,9 @@ export const sendComplaintNotificationToAdmin = async (complaint, adminEmail, ad
 };
 
 // Send email to user when complaint is accepted
-export const sendComplaintAcceptedEmail = async (complaint, userEmail, userName) => {
+const sendComplaintAcceptedEmail = async (complaint, userEmail, userName) => {
   const mailOptions = {
-    from: "deepumelkani123@gmail.com",
+    from: process.env.EMAIL_USER,
     to: userEmail,
     subject: "Your Complaint Has Been Accepted",
     html: `
@@ -76,9 +74,9 @@ export const sendComplaintAcceptedEmail = async (complaint, userEmail, userName)
 };
 
 // Send email to user when complaint is rejected
-export const sendComplaintRejectedEmail = async (complaint, userEmail, userName, reason) => {
+const sendComplaintRejectedEmail = async (complaint, userEmail, userName, reason) => {
   const mailOptions = {
-    from: "deepumelkani123@gmail.com",
+    from: process.env.EMAIL_USER,
     to: userEmail,
     subject: "Your Complaint Has Been Rejected",
     html: `
@@ -107,9 +105,9 @@ export const sendComplaintRejectedEmail = async (complaint, userEmail, userName,
 };
 
 // Send email to user when complaint is resolved
-export const sendComplaintResolvedEmail = async (complaint, userEmail, userName, actionTaken) => {
+const sendComplaintResolvedEmail = async (complaint, userEmail, userName, actionTaken) => {
   const mailOptions = {
-    from: "deepumelkani123@gmail.com",
+    from: process.env.EMAIL_USER,
     to: userEmail,
     subject: "Your Complaint Has Been Completed",
     html: `
@@ -139,9 +137,9 @@ export const sendComplaintResolvedEmail = async (complaint, userEmail, userName,
 };
 
 // Send email to director when complaint is escalated
-export const sendComplaintEscalatedToDirectorEmail = async (complaint, directorEmail, directorName, escalatedBy) => {
+const sendComplaintEscalatedToDirectorEmail = async (complaint, directorEmail, directorName, escalatedBy) => {
   const mailOptions = {
-    from: "deepumelkani123@gmail.com",
+    from: process.env.EMAIL_USER,
     to: directorEmail,
     subject: `Escalated Complaint - Requires Your Attention`,
     html: `
@@ -170,4 +168,12 @@ export const sendComplaintEscalatedToDirectorEmail = async (complaint, directorE
   } catch (error) {
     console.error("Error sending escalation email to director:", error);
   }
+};
+
+module.exports = {
+  sendComplaintNotificationToAdmin,
+  sendComplaintAcceptedEmail,
+  sendComplaintRejectedEmail,
+  sendComplaintResolvedEmail,
+  sendComplaintEscalatedToDirectorEmail,
 };

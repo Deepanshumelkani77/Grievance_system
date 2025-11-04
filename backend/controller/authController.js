@@ -1,6 +1,6 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 // Generate JWT Token
 const generateToken = (userId, role) => {
@@ -10,7 +10,7 @@ const generateToken = (userId, role) => {
 };
 
 // Signup - Only for students, teachers, workers
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
 
@@ -71,7 +71,7 @@ export const signup = async (req, res) => {
 };
 
 // Login - For all users
-export const login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -119,7 +119,7 @@ export const login = async (req, res) => {
 };
 
 // Get current user
-export const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");
     if (!user) {
@@ -141,4 +141,10 @@ export const getCurrentUser = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+module.exports = {
+  signup,
+  login,
+  getCurrentUser,
 };
