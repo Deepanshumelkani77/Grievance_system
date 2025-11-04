@@ -32,6 +32,31 @@ const DirectorDashboard = () => {
     }
   }, [user]);
 
+  // Resolve complaint
+  const handleResolve = async (complaintId) => {
+    const response = prompt("Please provide resolution details (optional):");
+    if (!confirm("Are you sure you want to mark this complaint as resolved?")) {
+      return;
+    }
+
+    try {
+      const res = await axios.put(
+        `${backendUrl}/api/complaints/${complaintId}/resolve`,
+        { response }
+      );
+
+      if (res.data.success) {
+        alert("Complaint resolved successfully!");
+        fetchEscalatedComplaints(); // Refresh the list
+      } else {
+        alert(res.data.message || "Failed to resolve complaint");
+      }
+    } catch (error) {
+      console.error("Error resolving complaint:", error);
+      alert("Error resolving complaint. Please try again.");
+    }
+  };
+
   // Calculate stats - only for escalated complaints
   const stats = {
     total: complaints.length,
@@ -245,6 +270,17 @@ const DirectorDashboard = () => {
                        "🧰 Staff"}
                     </span>
                   </div>
+
+                  {complaint.status === "Escalated" && (
+                    <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => handleResolve(complaint._id)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all inline-flex items-center gap-2"
+                      >
+                        <span>✅</span> Resolve
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
