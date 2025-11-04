@@ -106,8 +106,8 @@ const LowLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.total}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Total Complaints</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">All submissions</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Total Complaints</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">All submissions</p>
           </div>
 
           <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
@@ -119,8 +119,8 @@ const LowLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pending}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Pending Review</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Awaiting response</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Pending Review</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Awaiting response</p>
           </div>
 
           <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
@@ -132,8 +132,8 @@ const LowLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.inProgress}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">In Progress</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Being addressed</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">In Progress</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Being addressed</p>
           </div>
 
           <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
@@ -145,8 +145,8 @@ const LowLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.completed}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Completed</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Successfully closed</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Completed</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Successfully closed</p>
           </div>
         </div>
 
@@ -172,8 +172,8 @@ const LowLevelDashboard = () => {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
                 <span className="text-xl sm:text-2xl">🏫</span>
               </div>
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">Academic Issues</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Course-related, exam issues, faculty concerns</p>
+              <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">Academic Issues</h3>
+              <p className="text-xs sm:text-sm lg:text-lg text-gray-600 mb-3 sm:mb-4">Course-related, exam issues, faculty concerns</p>
               <div className="flex items-center gap-2 text-xs text-blue-700">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd"></path>
@@ -185,8 +185,8 @@ const LowLevelDashboard = () => {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
                 <span className="text-xl sm:text-2xl">🏠</span>
               </div>
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">Hostel Issues</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Accommodation, facilities, mess complaints</p>
+              <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">Hostel Issues</h3>
+              <p className="text-xs sm:text-sm lg:text-lg text-gray-600 mb-3 sm:mb-4">Accommodation, facilities, mess complaints</p>
               <div className="flex items-center gap-2 text-xs text-purple-700">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd"></path>
@@ -198,8 +198,8 @@ const LowLevelDashboard = () => {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-600 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
                 <span className="text-xl sm:text-2xl">🧰</span>
               </div>
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">Staff Issues</h3>
-              <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Teacher/Worker related concerns</p>
+              <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">Staff Issues</h3>
+              <p className="text-xs sm:text-sm lg:text-lg text-gray-600 mb-3 sm:mb-4">Teacher/Worker related concerns</p>
               <div className="flex items-center gap-2 text-xs text-indigo-700">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd"></path>
@@ -246,7 +246,7 @@ const LowLevelDashboard = () => {
                 >
                   <div className="flex flex-col sm:flex-row justify-between items-start mb-3 sm:mb-4 gap-2">
                     <div className="flex-1 w-full">
-                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1">{complaint.title}</h3>
+                      <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 mb-1">{complaint.title}</h3>
                       <div className="flex items-center gap-2 text-xs text-gray-500">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path>
@@ -266,7 +266,7 @@ const LowLevelDashboard = () => {
                     </span>
                   </div>
                   
-                  <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{complaint.description}</p>
+                  <p className="text-sm sm:text-base lg:text-xl text-gray-700 mb-3 sm:mb-4 leading-relaxed">{complaint.description}</p>
                   
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-3 border-t border-gray-200">
                     <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${

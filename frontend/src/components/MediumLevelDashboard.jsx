@@ -218,8 +218,8 @@ const MediumLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.total}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Assigned to Me</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Total assignments</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Assigned to Me</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Total assignments</p>
           </div>
 
           <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
@@ -231,8 +231,8 @@ const MediumLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.accepted}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Accepted</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Confirmed complaints</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Accepted</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Confirmed complaints</p>
           </div>
 
           <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
@@ -244,8 +244,8 @@ const MediumLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-red-600">{stats.rejected}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Rejected</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Not approved</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Rejected</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Not approved</p>
           </div>
 
           <div className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all">
@@ -257,16 +257,16 @@ const MediumLevelDashboard = () => {
                 <p className="text-2xl sm:text-3xl font-bold text-emerald-600">{stats.completed}</p>
               </div>
             </div>
-            <h3 className="text-sm sm:text-base lg:text-xl font-medium text-black">Completed</h3>
-            <p className="text-xs text-gray-600 mt-1 hidden sm:block">Successfully closed</p>
+            <h3 className="text-sm sm:text-base lg:text-2xl font-medium text-black">Completed</h3>
+            <p className="text-xs lg:text-lg text-gray-600 mt-1 hidden sm:block">Successfully closed</p>
           </div>
         </div>
 
         {/* Responsibilities Section */}
         <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm border border-gray-200 mb-6 sm:mb-8">
           <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">Your Responsibilities</h2>
-          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Manage {getComplaintType()} complaints efficiently</p>
-          <ul className="list-none p-0 m-0 space-y-3">
+          <p className="text-sm sm:text-base lg:text-xl text-gray-600 mb-4 sm:mb-6">Manage {getComplaintType()} complaints efficiently</p>
+          <ul className="list-none lg:text-xl p-0 m-0 space-y-3">
             <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 border-b border-gray-100 flex items-start gap-2 sm:gap-3">
               <span className="text-base sm:text-lg flex-shrink-0">📋</span>
               <span>Handle <strong>{getComplaintType()}</strong> complaints</span>
@@ -322,7 +322,7 @@ const MediumLevelDashboard = () => {
                 >
                   <div className="flex flex-col sm:flex-row justify-between items-start mb-3 sm:mb-4 gap-2">
                     <div className="flex-1 w-full">
-                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">{complaint.title}</h3>
+                      <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">{complaint.title}</h3>
                       <p className="text-sm text-gray-600 mb-1">
                         From: <strong>{complaint.createdBy?.name}</strong> ({complaint.createdBy?.role})
                         {complaint.createdBy?.department && ` - ${complaint.createdBy.department}`}
@@ -346,7 +346,7 @@ const MediumLevelDashboard = () => {
                     </span>
                   </div>
                   
-                  <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{complaint.description}</p>
+                  <p className="text-sm sm:text-base lg:text-xl text-gray-700 mb-3 sm:mb-4 leading-relaxed">{complaint.description}</p>
                   
                   <div className="flex items-center gap-3 pt-3 border-t border-gray-200">
                     <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
