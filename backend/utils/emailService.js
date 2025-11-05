@@ -1,24 +1,37 @@
 const nodemailer = require("nodemailer");
 
-
-
-// Create transporter with secure connection (port 465)
+// Use SendGrid for Render compatibility (free tier blocks SMTP)
+// SendGrid: Free 100 emails/day, works on Render
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // Use SSL
+  host: "smtp.sendgrid.net",
+  port: 587,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: "apikey", // This is literal "apikey", don't change
+    pass: process.env.SENDGRID_API_KEY, // Your SendGrid API key
   },
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000,
 });
+
+// Fallback to Gmail for local development (if SENDGRID_API_KEY not set)
+// This won't work on Render free tier, but works locally
+if (!process.env.SENDGRID_API_KEY && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  console.log("⚠️  Using Gmail (local dev only - won't work on Render free tier)");
+  const gmailTransporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+  // Use Gmail transporter for local dev
+  transporter.sendMail = gmailTransporter.sendMail.bind(gmailTransporter);
+}
 
 // Send email to admin when new complaint is submitted
 const sendComplaintNotificationToAdmin = async (complaint, adminEmail, adminName) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER || "noreply@biasgrievance.com",
     to: adminEmail,
     subject: `New Complaint Submitted - ${complaint.type.toUpperCase()}`,
     html: `
@@ -50,7 +63,7 @@ const sendComplaintNotificationToAdmin = async (complaint, adminEmail, adminName
 // Send email to user when complaint is accepted
 const sendComplaintAcceptedEmail = async (complaint, userEmail, userName) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER || "noreply@biasgrievance.com",
     to: userEmail,
     subject: "Your Complaint Has Been Accepted",
     html: `
@@ -80,7 +93,7 @@ const sendComplaintAcceptedEmail = async (complaint, userEmail, userName) => {
 // Send email to user when complaint is rejected
 const sendComplaintRejectedEmail = async (complaint, userEmail, userName, reason) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER || "noreply@biasgrievance.com",
     to: userEmail,
     subject: "Your Complaint Has Been Rejected",
     html: `
@@ -111,7 +124,7 @@ const sendComplaintRejectedEmail = async (complaint, userEmail, userName, reason
 // Send email to user when complaint is resolved
 const sendComplaintResolvedEmail = async (complaint, userEmail, userName, actionTaken) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER || "noreply@biasgrievance.com",
     to: userEmail,
     subject: "Your Complaint Has Been Completed",
     html: `
@@ -143,7 +156,7 @@ const sendComplaintResolvedEmail = async (complaint, userEmail, userName, action
 // Send email to director when complaint is escalated
 const sendComplaintEscalatedToDirectorEmail = async (complaint, directorEmail, directorName, escalatedBy) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER || "noreply@biasgrievance.com",
     to: directorEmail,
     subject: `Escalated Complaint - Requires Your Attention`,
     html: `
