@@ -31,6 +31,10 @@ const ComplaintForm = ({ onClose, onSubmitSuccess }) => {
     }
 
     try {
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${backendUrl}/api/complaints/submit`, {
         method: "POST",
         headers: {
@@ -38,12 +42,14 @@ const ComplaintForm = ({ onClose, onSubmitSuccess }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Complaint submitted successfully!");
+        toast.success("Complaint submitted successfully! (Note: Email notifications may take a few moments)");
         onSubmitSuccess && onSubmitSuccess(data.complaint);
         onClose();
       } else {
@@ -52,9 +58,15 @@ const ComplaintForm = ({ onClose, onSubmitSuccess }) => {
         toast.error(errorMsg);
       }
     } catch (err) {
-      const errorMsg = "Error submitting complaint. Please try again.";
+      let errorMsg = "Error submitting complaint. Please try again.";
+      if (err.name === 'AbortError') {
+        errorMsg = "Request timed out. Your complaint may have been submitted. Please refresh the page.";
+      } else if (!navigator.onLine) {
+        errorMsg = "No internet connection. Please check your network.";
+      }
       setError(errorMsg);
       toast.error(errorMsg);
+      console.error("Submit error:", err);
     } finally {
       setLoading(false);
     }
