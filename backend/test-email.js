@@ -19,14 +19,20 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
   process.exit(1);
 }
 
-// Create transporter
+// Create transporter (using port 465 for Render compatibility)
 console.log("\n2. Creating email transporter...");
+console.log("   Host: smtp.gmail.com");
+console.log("   Port: 465 (SSL)");
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // Use SSL
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
 });
 
 // Test email sending

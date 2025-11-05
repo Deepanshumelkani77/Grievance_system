@@ -2,13 +2,17 @@ const nodemailer = require("nodemailer");
 
 
 
-// Create transporter
+// Create transporter with secure connection (port 465)
 const transporter = nodemailer.createTransport({
-  service: "gmail", // or your email service
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // Use SSL
   auth: {
-    user: process.env.EMAIL_USER ,
+    user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 10000,
 });
 
 // Send email to admin when new complaint is submitted
