@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
-import axios from "axios";
+import { api } from "../context/AppContext";
 import assets from "../assets/assets";
 import { toast } from 'react-toastify';
 import ActivityLogs from "./ActivityLogs";
@@ -15,7 +15,7 @@ const DirectorDashboard = () => {
   // Fetch all complaints for statistics and escalated complaints
   const fetchComplaints = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/complaints/all`);
+      const response = await api.get(`/api/complaints/all`);
       if (response.data.success) {
         const allData = response.data.complaints;
         setAllComplaints(allData);
@@ -46,8 +46,8 @@ const DirectorDashboard = () => {
     }
 
     try {
-      const res = await axios.put(
-        `${backendUrl}/api/complaints/${complaintId}/resolve`,
+      const res = await api.put(
+        `/api/complaints/${complaintId}/resolve`,
         { response }
       );
 

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
+import { api } from "../context/AppContext";
 import ComplaintForm from "./ComplaintForm";
-import axios from "axios";
 import assets from "../assets/assets";
 
 const LowLevelDashboard = () => {
@@ -17,7 +17,7 @@ const LowLevelDashboard = () => {
   // Fetch user's complaints
   const fetchMyComplaints = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/complaints/my-complaints`);
+      const response = await api.get(`/api/complaints/my-complaints`);
       if (response.data.success) {
         setComplaints(response.data.complaints);
       }

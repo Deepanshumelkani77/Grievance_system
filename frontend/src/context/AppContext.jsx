@@ -4,6 +4,38 @@ import { toast } from 'react-toastify';
 
 export const AppContext = createContext();
 
+// Create axios instance with interceptors
+const api = axios.create({
+  baseURL: "https://grievance-system-backend.onrender.com"
+});
+
+// Add request interceptor to always include token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid - logout user
+      localStorage.removeItem("token");
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
+
 const AppContextProvider = (props) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -100,6 +132,7 @@ const AppContextProvider = (props) => {
     signup,
     logout,
     backendUrl,
+    api, // Export the axios instance with interceptors
   };
 
   return (
@@ -108,3 +141,4 @@ const AppContextProvider = (props) => {
 };
 
 export default AppContextProvider;
+export { api }; // Export api instance for direct use

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
-import axios from "axios";
+import { api } from "../context/AppContext";
 import assets from "../assets/assets";
 import { toast } from 'react-toastify';
 
@@ -20,7 +20,7 @@ const MediumLevelDashboard = () => {
   // Fetch assigned complaints
   const fetchComplaints = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/complaints/assigned`);
+      const response = await api.get(`/api/complaints/assigned`);
       if (response.data.success) {
         setComplaints(response.data.complaints);
       }
@@ -45,8 +45,8 @@ const MediumLevelDashboard = () => {
     }
 
     try {
-      const response = await axios.put(
-        `${backendUrl}/api/complaints/${complaintId}/reject`,
+      const response = await api.put(
+        `/api/complaints/${complaintId}/reject`,
         { reason }
       );
 
@@ -69,8 +69,8 @@ const MediumLevelDashboard = () => {
     }
 
     try {
-      const response = await axios.put(
-        `${backendUrl}/api/complaints/${complaintId}/accept`
+      const response = await api.put(
+        `/api/complaints/${complaintId}/accept`
       );
 
       if (response.data.success) {
@@ -93,8 +93,8 @@ const MediumLevelDashboard = () => {
     }
 
     try {
-      const res = await axios.put(
-        `${backendUrl}/api/complaints/${complaintId}/resolve`,
+      const res = await api.put(
+        `/api/complaints/${complaintId}/resolve`,
         { response }
       );
 
@@ -117,8 +117,8 @@ const MediumLevelDashboard = () => {
     }
 
     try {
-      const response = await axios.put(
-        `${backendUrl}/api/complaints/${complaintId}/escalate`
+      const response = await api.put(
+        `/api/complaints/${complaintId}/escalate`
       );
 
       if (response.data.success) {

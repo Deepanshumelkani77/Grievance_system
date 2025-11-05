@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../context/AppContext";
-import axios from "axios";
+import { api } from "../context/AppContext";
 import { toast } from "react-toastify";
 
 const ActivityLogs = () => {
@@ -18,7 +18,7 @@ const ActivityLogs = () => {
   const fetchAllComplaints = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${backendUrl}/api/complaints/all`);
+      const response = await api.get(`/api/complaints/all`);
       if (response.data.success) {
         setComplaints(response.data.complaints);
       }
@@ -33,7 +33,7 @@ const ActivityLogs = () => {
   const fetchComplaintLogs = async (complaintId) => {
     try {
       setLogsLoading(true);
-      const response = await axios.get(`${backendUrl}/api/complaints/${complaintId}/logs`);
+      const response = await api.get(`/api/complaints/${complaintId}/logs`);
       if (response.data.success) {
         setComplaintLogs(response.data.logs);
       }
