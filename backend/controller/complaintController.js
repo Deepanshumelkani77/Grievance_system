@@ -84,11 +84,19 @@ const submitComplaint = async (req, res) => {
 
     // Send email notification asynchronously (non-blocking)
     if (newComplaint.assignedTo && newComplaint.assignedTo.email) {
+      console.log("\n🔔 Sending email notification...");
       sendComplaintNotificationToAdmin(
         newComplaint,
         newComplaint.assignedTo.email,
         newComplaint.assignedTo.name
-      ).catch(err => console.error("Email error:", err));
+      ).catch(err => {
+        console.error("❌ Email sending failed:");
+        console.error("   Error:", err.message);
+        console.error("   Stack:", err.stack);
+      });
+    } else {
+      console.log("⚠️  No admin email found - email not sent");
+      console.log("   assignedTo:", newComplaint.assignedTo);
     }
   } catch (error) {
     console.error("Submit complaint error:", error);

@@ -30,6 +30,11 @@ if (!process.env.SENDGRID_API_KEY && process.env.EMAIL_USER && process.env.EMAIL
 
 // Send email to admin when new complaint is submitted
 const sendComplaintNotificationToAdmin = async (complaint, adminEmail, adminName) => {
+  console.log("📧 Attempting to send email...");
+  console.log("   To:", adminEmail);
+  console.log("   Admin:", adminName);
+  console.log("   Complaint:", complaint.title);
+  
   const mailOptions = {
     from: process.env.EMAIL_USER || "noreply@biasgrievance.com",
     to: adminEmail,
@@ -53,10 +58,16 @@ const sendComplaintNotificationToAdmin = async (complaint, adminEmail, adminName
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("Email sent to admin:", adminEmail);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully!");
+    console.log("   Message ID:", info.messageId);
+    console.log("   Response:", info.response);
+    console.log("   To:", adminEmail);
   } catch (error) {
-    console.error("Error sending email to admin:", error);
+    console.error("❌ ERROR sending email to admin:", adminEmail);
+    console.error("   Error message:", error.message);
+    console.error("   Full error:", error);
+    throw error; // Re-throw to see it in the main catch block
   }
 };
 
