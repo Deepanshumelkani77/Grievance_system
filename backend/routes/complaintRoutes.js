@@ -9,6 +9,8 @@ const {
   acceptComplaint,
   resolveComplaint,
   escalateComplaint,
+  getAllLogs,
+  getComplaintLogs,
 } = require("../controller/complaintController");
 const { authenticate, authorize } = require("../middleware/authMiddleware");
 
@@ -24,5 +26,9 @@ router.put("/:complaintId/reject", authenticate, authorize("hod", "registrar", "
 router.put("/:complaintId/accept", authenticate, authorize("hod", "registrar", "warden"), acceptComplaint);
 router.put("/:complaintId/resolve", authenticate, authorize("hod", "registrar", "warden", "director"), resolveComplaint);
 router.put("/:complaintId/escalate", authenticate, authorize("hod", "registrar", "warden"), escalateComplaint);
+
+// Complaint logs routes
+router.get("/logs/all", authenticate, authorize("director"), getAllLogs);
+router.get("/:complaintId/logs", authenticate, getComplaintLogs);
 
 module.exports = router;

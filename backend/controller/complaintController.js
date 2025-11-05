@@ -1,5 +1,7 @@
 const Complaint = require("../models/complaint");
 const User = require("../models/user");
+const ComplaintLog = require("../models/complaintLog");
+const { logComplaintAction } = require("../utils/complaintLogger");
 const {
   sendComplaintNotificationToAdmin,
   sendComplaintAcceptedEmail,
@@ -58,6 +60,16 @@ const submitComplaint = async (req, res) => {
     });
 
     await newComplaint.save();
+
+    // Log complaint submission
+    await logComplaintAction({
+      complaintId: newComplaint._id,
+      action: "submitted",
+      performedBy: userId,
+      newStatus: "Pending",
+      assignedTo: assignedTo,
+      remarks: `Complaint submitted: ${title}`,
+    });
 
     // Populate creator details for response
     await newComplaint.populate("createdBy", "name email role department");
@@ -272,6 +284,16 @@ const rejectComplaint = async (req, res) => {
 
     await complaint.save();
 
+    // Log complaint rejection
+    await logComplaintAction({
+      complaintId: complaint._id,
+      action: "rejected",
+      performedBy: userId,
+      previousStatus: "Pending",
+      newStatus: "Rejected",
+      remarks: reason || "Complaint rejected by admin",
+    });
+
     // Populate user details for email
     await complaint.populate("createdBy", "name email");
 
@@ -345,6 +367,16 @@ const acceptComplaint = async (req, res) => {
 
     await complaint.save();
 
+    // Log complaint acceptance
+    await logComplaintAction({
+      complaintId: complaint._id,
+      action: "accepted",
+      performedBy: userId,
+      previousStatus: "Pending",
+      newStatus: "Accepted",
+      remarks: "Complaint accepted by admin",
+    });
+
     // Populate user details for email
     await complaint.populate("createdBy", "name email");
 
@@ -417,10 +449,21 @@ const resolveComplaint = async (req, res) => {
     }
 
     // Resolve complaint
+    const previousStatus = complaint.status;
     complaint.status = "Completed";
     if (response) complaint.response = response;
 
     await complaint.save();
+
+    // Log complaint resolution
+    await logComplaintAction({
+      complaintId: complaint._id,
+      action: "resolved",
+      performedBy: userId,
+      previousStatus: previousStatus,
+      newStatus: "Completed",
+      remarks: response || "Complaint resolved",
+    });
 
     // Populate user details for email
     await complaint.populate("createdBy", "name email");
@@ -506,6 +549,17 @@ const escalateComplaint = async (req, res) => {
 
     await complaint.save();
 
+    // Log complaint escalation
+    await logComplaintAction({
+      complaintId: complaint._id,
+      action: "escalated",
+      performedBy: userId,
+      previousStatus: "Accepted",
+      newStatus: "Escalated",
+      escalatedTo: director._id,
+      remarks: "Complaint escalated to Director",
+    });
+
     // Populate complaint details for email
     await complaint.populate("createdBy", "name email role department");
 
@@ -538,6 +592,95 @@ const escalateComplaint = async (req, res) => {
   }
 };
 
+// Get all complaint logs (Director only)
+const getAllLogs = async (req, res) => {
+  try {
+    const userRole = req.userRole;
+
+    // Only director can access all logs
+    if (userRole !== "director") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Director access required.",
+      });
+    }
+
+    const logs = await ComplaintLog.find()
+      .populate("complaint", "title type status createdAt")
+      .populate("performedBy", "name email role")
+      .populate("assignedTo", "name role")
+      .populate("escalatedTo", "name role")
+      .sort({ timestamp: -1 });
+
+    res.status(200).json({
+      success: true,
+      logs,
+      totalLogs: logs.length,
+    });
+  } catch (error) {
+    console.error("Get all logs error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching logs",
+      error: error.message,
+    });
+  }
+};
+
+// Get logs for a specific complaint
+const getComplaintLogs = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+    const userId = req.userId;
+    const userRole = req.userRole;
+
+    // Check if complaint exists
+    const complaint = await Complaint.findById(complaintId);
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    // Check access - user must be creator, assigned to, or director
+    const isCreator = complaint.createdBy?.toString() === userId;
+    const isAssigned = complaint.assignedTo?.toString() === userId;
+    const isDirector = userRole === "director";
+
+    if (!isCreator && !isAssigned && !isDirector) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. You don't have permission to view these logs.",
+      });
+    }
+
+    const logs = await ComplaintLog.find({ complaint: complaintId })
+      .populate("performedBy", "name email role")
+      .populate("assignedTo", "name role")
+      .populate("escalatedTo", "name role")
+      .sort({ timestamp: 1 }); // Chronological order
+
+    res.status(200).json({
+      success: true,
+      logs,
+      complaint: {
+        id: complaint._id,
+        title: complaint.title,
+        type: complaint.type,
+        status: complaint.status,
+      },
+    });
+  } catch (error) {
+    console.error("Get complaint logs error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching complaint logs",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   submitComplaint,
   getMyComplaints,
@@ -548,4 +691,6 @@ module.exports = {
   rejectComplaint,
   resolveComplaint,
   escalateComplaint,
+  getAllLogs,
+  getComplaintLogs,
 };

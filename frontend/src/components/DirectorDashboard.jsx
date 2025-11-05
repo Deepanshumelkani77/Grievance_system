@@ -3,12 +3,14 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import assets from "../assets/assets";
 import { toast } from 'react-toastify';
+import ActivityLogs from "./ActivityLogs";
 
 const DirectorDashboard = () => {
   const { user, logout, backendUrl } = useContext(AppContext);
   const [allComplaints, setAllComplaints] = useState([]);
   const [escalatedComplaints, setEscalatedComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState("complaints"); // "complaints" or "logs"
 
   // Fetch all complaints for statistics and escalated complaints
   const fetchComplaints = async () => {
@@ -244,7 +246,35 @@ const DirectorDashboard = () => {
           </ul>
         </div>
 
-        {/* Complaints List */}
+        {/* View Toggle Navigation */}
+        <div className="flex gap-2 sm:gap-4 mb-6 sm:mb-8 bg-white p-2 rounded-xl shadow-sm border border-gray-200">
+          <button
+            onClick={() => setActiveView("complaints")}
+            className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm sm:text-base transition-all ${
+              activeView === "complaints"
+                ? "bg-[#021189] text-white shadow-lg"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <span className="mr-2">🔼</span>
+            Escalated Complaints
+          </button>
+          <button
+            onClick={() => setActiveView("logs")}
+            className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm sm:text-base transition-all ${
+              activeView === "logs"
+                ? "bg-[#021189] text-white shadow-lg"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <span className="mr-2">📋</span>
+            Activity Logs
+          </button>
+        </div>
+
+        {/* Conditional View Rendering */}
+        {activeView === "complaints" ? (
+          /* Complaints List */
         <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm border border-gray-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
             <div>
@@ -336,6 +366,10 @@ const DirectorDashboard = () => {
             </div>
           )}
         </div>
+        ) : (
+          /* Activity Logs View */
+          <ActivityLogs />
+        )}
       </div>
 
       {/* Footer */}
@@ -358,9 +392,20 @@ const DirectorDashboard = () => {
               <h3 className="text-xl font-bold mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
+                  <button 
+                    onClick={() => setActiveView("complaints")}
+                    className="text-blue-100 hover:text-white transition-colors flex items-center gap-2"
+                  >
                     <span>🔼</span> Escalated Complaints
-                  </a>
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => setActiveView("logs")}
+                    className="text-blue-100 hover:text-white transition-colors flex items-center gap-2"
+                  >
+                    <span>📋</span> Activity Logs
+                  </button>
                 </li>
                 <li>
                   <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
@@ -370,11 +415,6 @@ const DirectorDashboard = () => {
                 <li>
                   <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
                     <span>📈</span> Reports
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-blue-100 hover:text-white transition-colors flex items-center gap-2">
-                    <span>⚙️</span> System Settings
                   </a>
                 </li>
               </ul>
