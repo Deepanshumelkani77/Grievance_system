@@ -1,0 +1,14 @@
+2025-11-05 09:24:17 [INFO]: Server is running on port 9000
+2025-11-05 09:24:17 [INFO]: Environment: development
+2025-11-05 09:24:18 [INFO]: Database connected successfully
+2025-11-05 09:24:37 [INFO]: Server is running on port 9000
+2025-11-05 09:24:37 [INFO]: Environment: development
+2025-11-05 09:24:38 [INFO]: Database connected successfully
+2025-11-05 09:24:54 [INFO]: Server is running on port 9000
+2025-11-05 09:24:54 [INFO]: Environment: development
+2025-11-05 09:24:55 [INFO]: Database connected successfully
+2025-11-05 09:25:12 [INFO]: Server is running on port 9000
+2025-11-05 09:25:12 [INFO]: Environment: development
+2025-11-05 09:25:13 [INFO]: Database connected successfully
+2025-11-05 09:26:56 [INFO]: Testing logger setup
+2025-11-05 09:26:56 [ERROR]: Test error log
