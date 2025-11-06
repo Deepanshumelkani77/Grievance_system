@@ -12,8 +12,8 @@ const MediumLevelDashboard = () => {
   // Determine the type of complaints this user handles
   const getComplaintType = () => {
     if (user?.role === "hod") return "Academic";
-    if (user?.role === "warden") return "Hostel";
-    if (user?.role === "registrar") return "Staff (Teacher/Worker)";
+    if (user?.role === "chief_hostel_warden") return "Hostel";
+    if (user?.role === "registrar") return "Staff (Faculty/Staff)";
     return "N/A";
   };
 
@@ -191,7 +191,7 @@ const MediumLevelDashboard = () => {
         <div className="bg-[#021189] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 text-white shadow-lg">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">Welcome, {user?.role === "hod" ? "HOD" : user?.role === "warden" ? "Warden" : "Registrar"}! 👔</h1>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">Welcome, {user?.role === "hod" ? "HOD" : user?.role === "chief_hostel_warden" ? "Chief Hostel Warden" : "Registrar"}! 👔</h1>
               <p className="text-blue-100 text-sm sm:text-base lg:text-lg">Manage and resolve assigned grievances</p>
             </div>
             <div className="hidden md:flex items-center gap-4">
@@ -422,7 +422,7 @@ const MediumLevelDashboard = () => {
                 BIAS Grievance Portal
               </h3>
               <p className="text-blue-100 text-sm leading-relaxed">
-                Birla Institute of Applied Sciences is committed to addressing student, teacher, and worker concerns efficiently and transparently.
+                Birla Institute of Applied Sciences is committed to addressing student, faculty, and staff concerns efficiently and transparently.
               </p>
             </div>
 

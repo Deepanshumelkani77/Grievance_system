@@ -107,8 +107,8 @@ const ComplaintForm = ({ onClose, onSubmitSuccess }) => {
               required
             >
               <option value="academic">🏫 Academic (Goes to HOD)</option>
-              <option value="hostel">🏠 Hostel (Goes to Warden)</option>
-              <option value="staff">🧰 Staff/Worker (Goes to Registrar)</option>
+              <option value="hostel">🏠 Hostel (Goes to Chief Hostel Warden)</option>
+              <option value="staff">🧰 Staff (Goes to Registrar)</option>
             </select>
           </div>
 

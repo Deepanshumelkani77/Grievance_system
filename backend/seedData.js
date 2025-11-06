@@ -12,7 +12,7 @@ const seedData = async () => {
     console.log("Database connected successfully");
 
     // Clear existing admin users (optional - comment out if you don't want to clear)
-    await User.deleteMany({ role: { $in: ["director", "hod", "registrar", "warden"] } });
+    await User.deleteMany({ role: { $in: ["director", "hod", "registrar", "chief_hostel_warden"] } });
 
     // Hash password
     const hashedPassword = await bcrypt.hash("admin123", 10);
@@ -48,10 +48,10 @@ const seedData = async () => {
         department: "Administration",
       },
       {
-        name: "Hostel Warden",
-        email: "warden@college.edu",
+        name: "Chief Hostel Warden",
+        email: "chief.hostel.warden@college.edu",
         password: hashedPassword,
-        role: "warden",
+        role: "chief_hostel_warden",
         department: "Hostel",
       },
     ];

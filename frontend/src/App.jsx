@@ -45,12 +45,12 @@ const App = () => {
       
       case "hod":
       case "registrar":
-      case "warden":
+      case "chief_hostel_warden":
         return <MediumLevelDashboard />;
       
       case "student":
-      case "teacher":
-      case "worker":
+      case "faculty":
+      case "staff":
         return <LowLevelDashboard />;
       
       default:

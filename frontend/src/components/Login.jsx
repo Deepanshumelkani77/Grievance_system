@@ -40,25 +40,25 @@ const Login = ({ setShowSignup }) => {
   const roleCategories = [
     {
       id: 'basic',
-      title: 'Student / Teacher / Worker',
+      title: 'Student / Faculty / Staff',
       description: 'Submit and track your grievances',
       icon: '👥',
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
       hoverColor: 'hover:border-blue-400',
-      roles: ['Student', 'Teacher', 'Worker']
+      roles: ['Student', 'Faculty', 'Staff']
     },
     {
       id: 'middle',
       title: 'Middle Level Admin',
-      description: 'HOD, Registrar, Warden access',
+      description: 'HOD, Registrar, Chief Hostel Warden',
       icon: '🎯',
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200',
       hoverColor: 'hover:border-purple-400',
-      roles: ['HOD', 'Registrar', 'Warden']
+      roles: ['HOD', 'Registrar', 'Chief Hostel Warden']
     },
     {
       id: 'super',

@@ -9,16 +9,16 @@ const generateToken = (userId, role) => {
   });
 };
 
-// Signup - Only for students, teachers, workers
+// Signup - Only for students, faculty, staff
 const signup = async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
 
     // Check if role is allowed for signup
-    if (!["student", "teacher", "worker"].includes(role)) {
+    if (!["student", "faculty", "staff"].includes(role)) {
       return res.status(403).json({
         success: false,
-        message: "Signup is only allowed for students, teachers, and workers",
+        message: "Signup is only allowed for students, faculty, and staff",
       });
     }
 

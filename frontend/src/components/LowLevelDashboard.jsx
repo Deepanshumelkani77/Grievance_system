@@ -191,7 +191,7 @@ const LowLevelDashboard = () => {
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd"></path>
                 </svg>
-                <span className="font-semibold">Assigned to Warden</span>
+                <span className="font-semibold">Assigned to Chief Hostel Warden</span>
               </div>
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 sm:p-6 rounded-lg sm:rounded-xl border border-indigo-200">
@@ -199,7 +199,7 @@ const LowLevelDashboard = () => {
                 <span className="text-xl sm:text-2xl">🧰</span>
               </div>
               <h3 className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">Staff Issues</h3>
-              <p className="text-xs sm:text-sm lg:text-lg text-gray-600 mb-3 sm:mb-4">Teacher/Worker related concerns</p>
+              <p className="text-xs sm:text-sm lg:text-lg text-gray-600 mb-3 sm:mb-4">Faculty/Staff related concerns</p>
               <div className="flex items-center gap-2 text-xs text-indigo-700">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd"></path>
@@ -326,7 +326,7 @@ const LowLevelDashboard = () => {
                 BIAS Grievance Portal
               </h3>
               <p className="text-blue-100 text-sm leading-relaxed">
-                Birla Institute of Applied Sciences is committed to addressing student, teacher, and worker concerns efficiently and transparently.
+                Birla Institute of Applied Sciences is committed to addressing student, faculty, and staff concerns efficiently and transparently.
               </p>
             </div>
 

@@ -233,7 +233,7 @@ const DirectorDashboard = () => {
             </li>
             <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 border-b border-gray-100 flex items-start gap-2 sm:gap-3">
               <span className="text-base sm:text-lg flex-shrink-0">✅</span>
-              <span>Handle escalated complaints from HOD, Registrar, and Warden</span>
+              <span>Handle escalated complaints from HOD, Registrar, and Chief Hostel Warden</span>
             </li>
             <li className="py-2 sm:py-3 text-xs sm:text-sm lg:text-base text-gray-700 border-b border-gray-100 flex items-start gap-2 sm:gap-3">
               <span className="text-base sm:text-lg flex-shrink-0">✅</span>
@@ -279,7 +279,7 @@ const DirectorDashboard = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
             <div>
               <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800">🔼 Escalated Complaints</h2>
-              <p className="text-xs sm:text-sm lg:text-base text-gray-500 mt-1">Referred by HOD, Warden, or Registrar</p>
+              <p className="text-xs sm:text-sm lg:text-base text-gray-500 mt-1">Referred by HOD, Chief Hostel Warden, or Registrar</p>
             </div>
             <div className="text-xs sm:text-sm text-gray-500">
               {escalatedComplaints.length} {escalatedComplaints.length === 1 ? 'complaint' : 'complaints'}
@@ -297,7 +297,7 @@ const DirectorDashboard = () => {
                 <span className="text-5xl">📭</span>
               </div>
               <p className="text-lg text-gray-800 font-semibold mb-2">No escalated complaints</p>
-              <p className="text-sm text-gray-500 mb-6">Complaints escalated by HOD, Warden, or Registrar will appear here</p>
+              <p className="text-sm text-gray-500 mb-6">Complaints escalated by HOD, Chief Hostel Warden, or Registrar will appear here</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -383,7 +383,7 @@ const DirectorDashboard = () => {
                 BIAS Grievance Portal
               </h3>
               <p className="text-blue-100 text-sm leading-relaxed">
-                Birla Institute of Applied Sciences is committed to addressing student, teacher, and worker concerns efficiently and transparently.
+                Birla Institute of Applied Sciences is committed to addressing student, faculty, and staff concerns efficiently and transparently.
               </p>
             </div>
 

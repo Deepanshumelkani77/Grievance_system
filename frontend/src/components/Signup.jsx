@@ -199,8 +199,8 @@ const Signup = ({ setShowSignup }) => {
                     required
                   >
                     <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="worker">Worker</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="staff">Staff</option>
                   </select>
                 </div>
 

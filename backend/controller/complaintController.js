@@ -40,9 +40,9 @@ const submitComplaint = async (req, res) => {
       const hod = await User.findOne({ role: "hod" });
       if (hod) assignedTo = hod._id;
     } else if (type === "hostel") {
-      // Assign to Warden
-      const warden = await User.findOne({ role: "warden" });
-      if (warden) assignedTo = warden._id;
+      // Assign to Chief Hostel Warden
+      const chief_hostel_warden = await User.findOne({ role: "chief_hostel_warden" });
+      if (chief_hostel_warden) assignedTo = chief_hostel_warden._id;
     } else if (type === "staff") {
       // Assign to Registrar
       const registrar = await User.findOne({ role: "registrar" });
