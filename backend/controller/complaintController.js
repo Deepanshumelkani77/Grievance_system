@@ -124,14 +124,14 @@ const getMyComplaints = async (req, res) => {
   }
 };
 
-// Get complaints assigned to a medium-level user (HOD, Registrar, Warden)
+// Get complaints assigned to a medium-level user (HOD, Registrar, Chief Hostel Warden)
 const getAssignedComplaints = async (req, res) => {
   try {
     const userId = req.userId;
     const userRole = req.userRole;
 
     // Only medium-level users can access this
-    if (!["hod", "registrar", "warden"].includes(userRole)) {
+    if (!["hod", "registrar", "chief_hostel_warden"].includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: "Access denied",
@@ -686,6 +686,112 @@ const getComplaintLogs = async (req, res) => {
   }
 };
 
+// Add old complaint manually (for middle-level admins)
+const addOldComplaint = async (req, res) => {
+  try {
+    const { title, description, type, studentName, studentEmail, customDate, status, response } = req.body;
+    const adminId = req.userId;
+
+    // Validate input
+    if (!title || !description || !type || !studentName || !studentEmail || !customDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide all required fields",
+      });
+    }
+
+    // Validate complaint type
+    if (!["academic", "hostel", "staff"].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid complaint type",
+      });
+    }
+
+    // Validate status
+    const validStatuses = ["Pending", "Accepted", "Rejected", "In Progress", "Resolved", "Escalated", "Completed"];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status",
+      });
+    }
+
+    // Parse the custom date
+    const complaintDate = new Date(customDate);
+    if (isNaN(complaintDate.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date format",
+      });
+    }
+
+    // Get admin details
+    const admin = await User.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    // Find or create a dummy user for the student
+    let student = await User.findOne({ email: studentEmail });
+    if (!student) {
+      // Create a temporary user record for historical complaint
+      student = new User({
+        name: studentName,
+        email: studentEmail,
+        password: "historical_record", // Not a real password
+        role: "student",
+        department: "Historical Record",
+      });
+      await student.save();
+    }
+
+    // Create complaint with custom date
+    const newComplaint = new Complaint({
+      title,
+      description,
+      type,
+      createdBy: student._id,
+      assignedTo: adminId,
+      status: status || "Completed",
+      response: response || "",
+      createdAt: complaintDate, // Custom date
+    });
+
+    await newComplaint.save();
+
+    // Log the manual addition
+    await logComplaintAction({
+      complaintId: newComplaint._id,
+      action: "manually_added",
+      performedBy: adminId,
+      newStatus: status || "Completed",
+      assignedTo: adminId,
+      remarks: `Old complaint added manually by ${admin.name} (${admin.role}). Original date: ${complaintDate.toLocaleDateString()}`,
+    });
+
+    // Populate details for response
+    await newComplaint.populate("createdBy", "name email role department");
+    await newComplaint.populate("assignedTo", "name email role");
+
+    res.status(201).json({
+      success: true,
+      message: "Old complaint added successfully",
+      complaint: newComplaint,
+    });
+  } catch (error) {
+    console.error("Add old complaint error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error adding old complaint",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   submitComplaint,
   getMyComplaints,
@@ -698,4 +804,5 @@ module.exports = {
   escalateComplaint,
   getAllLogs,
   getComplaintLogs,
+  addOldComplaint,
 };

@@ -11,6 +11,7 @@ const {
   escalateComplaint,
   getAllLogs,
   getComplaintLogs,
+  addOldComplaint,
 } = require("../controller/complaintController");
 const { authenticate, authorize } = require("../middleware/authMiddleware");
 
@@ -30,5 +31,8 @@ router.put("/:complaintId/escalate", authenticate, authorize("hod", "registrar",
 // Complaint logs routes
 router.get("/logs/all", authenticate, authorize("director"), getAllLogs);
 router.get("/:complaintId/logs", authenticate, getComplaintLogs);
+
+// Add old complaint manually (middle-level admins only)
+router.post("/add-old", authenticate, authorize("hod", "registrar", "chief_hostel_warden"), addOldComplaint);
 
 module.exports = router;

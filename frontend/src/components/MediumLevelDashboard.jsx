@@ -8,6 +8,17 @@ const MediumLevelDashboard = () => {
   const { user, logout, backendUrl } = useContext(AppContext);
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddOldComplaintModal, setShowAddOldComplaintModal] = useState(false);
+  const [oldComplaintForm, setOldComplaintForm] = useState({
+    title: "",
+    description: "",
+    type: "",
+    studentName: "",
+    studentEmail: "",
+    customDate: "",
+    status: "Completed",
+    response: ""
+  });
 
   // Determine the type of complaints this user handles
   const getComplaintType = () => {
@@ -130,6 +141,44 @@ const MediumLevelDashboard = () => {
     } catch (error) {
       console.error("Error escalating complaint:", error);
       toast.error("Error escalating complaint. Please try again.");
+    }
+  };
+
+  // Handle adding old complaint
+  const handleAddOldComplaint = async (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!oldComplaintForm.title || !oldComplaintForm.description || !oldComplaintForm.type || 
+        !oldComplaintForm.studentName || !oldComplaintForm.studentEmail || !oldComplaintForm.customDate) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      const response = await api.post("/api/complaints/add-old", oldComplaintForm);
+      
+      if (response.data.success) {
+        toast.success("Old complaint added successfully!");
+        setShowAddOldComplaintModal(false);
+        // Reset form
+        setOldComplaintForm({
+          title: "",
+          description: "",
+          type: "",
+          studentName: "",
+          studentEmail: "",
+          customDate: "",
+          status: "Completed",
+          response: ""
+        });
+        fetchComplaints(); // Refresh the list
+      } else {
+        toast.error(response.data.message || "Failed to add old complaint");
+      }
+    } catch (error) {
+      console.error("Error adding old complaint:", error);
+      toast.error("Error adding old complaint. Please try again.");
     }
   };
 
@@ -284,6 +333,18 @@ const MediumLevelDashboard = () => {
               <span>Provide responses and solutions to complainants</span>
             </li>
           </ul>
+        </div>
+
+        {/* Add Old Complaint Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => setShowAddOldComplaintModal(true)}
+            className="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all hover:shadow-lg flex items-center justify-center gap-2"
+          >
+            <span className="text-xl">📝</span>
+            Add Old/Historical Complaint
+          </button>
+          <p className="text-sm text-gray-500 mt-2">Manually add past complaints with custom dates for record-keeping</p>
         </div>
 
         {/* Complaints List */}
@@ -491,6 +552,174 @@ const MediumLevelDashboard = () => {
           </div>
         </div>
       </footer>
+
+      {/* Add Old Complaint Modal */}
+      {showAddOldComplaintModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#021189] text-white p-6 rounded-t-xl">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold">Add Old/Historical Complaint</h2>
+                  <p className="text-blue-100 text-sm mt-1">Manually add past complaints for record-keeping</p>
+                </div>
+                <button
+                  onClick={() => setShowAddOldComplaintModal(false)}
+                  className="text-white hover:text-gray-300 text-3xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleAddOldComplaint} className="p-6 space-y-4">
+              {/* Complaint Title */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Complaint Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={oldComplaintForm.title}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, title: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  placeholder="Enter complaint title"
+                  required
+                />
+              </div>
+
+              {/* Complaint Description */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={oldComplaintForm.description}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, description: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  rows="4"
+                  placeholder="Enter complaint details"
+                  required
+                />
+              </div>
+
+              {/* Complaint Type */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Complaint Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={oldComplaintForm.type}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, type: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  required
+                >
+                  <option value="">Select Type</option>
+                  <option value="academic">🏫 Academic</option>
+                  <option value="hostel">🏠 Hostel</option>
+                  <option value="staff">🧰 Staff</option>
+                </select>
+              </div>
+
+              {/* Student Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Student Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={oldComplaintForm.studentName}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, studentName: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  placeholder="Enter student name"
+                  required
+                />
+              </div>
+
+              {/* Student Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Student Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={oldComplaintForm.studentEmail}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, studentEmail: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  placeholder="student@email.com"
+                  required
+                />
+              </div>
+
+              {/* Custom Date & Time */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Complaint Date & Time <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="datetime-local"
+                  value={oldComplaintForm.customDate}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, customDate: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">Select the original date when this complaint was filed</p>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Status <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={oldComplaintForm.status}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, status: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  required
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Accepted">Accepted</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Resolved">Resolved</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+
+              {/* Response/Resolution */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Resolution/Response (Optional)
+                </label>
+                <textarea
+                  value={oldComplaintForm.response}
+                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, response: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  rows="3"
+                  placeholder="Enter resolution or response (if applicable)"
+                />
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all"
+                >
+                  Add Complaint
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddOldComplaintModal(false)}
+                  className="flex-1 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
