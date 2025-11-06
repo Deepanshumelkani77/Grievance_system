@@ -28,6 +28,14 @@ const MediumLevelDashboard = () => {
     return "N/A";
   };
 
+  // Get complaint type code for form
+  const getComplaintTypeCode = () => {
+    if (user?.role === "hod") return "academic";
+    if (user?.role === "chief_hostel_warden") return "hostel";
+    if (user?.role === "registrar") return "staff";
+    return "";
+  };
+
   // Fetch assigned complaints
   const fetchComplaints = async () => {
     try {
@@ -338,7 +346,19 @@ const MediumLevelDashboard = () => {
         {/* Add Old Complaint Button */}
         <div className="mb-6">
           <button
-            onClick={() => setShowAddOldComplaintModal(true)}
+            onClick={() => {
+              setOldComplaintForm({
+                title: "",
+                description: "",
+                type: getComplaintTypeCode(), // Auto-select based on role
+                studentName: "",
+                studentEmail: "",
+                customDate: "",
+                status: "Completed",
+                response: ""
+              });
+              setShowAddOldComplaintModal(true);
+            }}
             className="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all hover:shadow-lg flex items-center justify-center gap-2"
           >
             <span className="text-xl">📝</span>
@@ -555,7 +575,7 @@ const MediumLevelDashboard = () => {
 
       {/* Add Old Complaint Modal */}
       {showAddOldComplaintModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="bg-[#021189] text-white p-6 rounded-t-xl">
               <div className="flex justify-between items-center">
@@ -603,22 +623,18 @@ const MediumLevelDashboard = () => {
                 />
               </div>
 
-              {/* Complaint Type */}
+              {/* Complaint Type - Auto-selected, read-only */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Complaint Type <span className="text-red-500">*</span>
                 </label>
-                <select
-                  value={oldComplaintForm.type}
-                  onChange={(e) => setOldComplaintForm({...oldComplaintForm, type: e.target.value})}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
-                  required
-                >
-                  <option value="">Select Type</option>
-                  <option value="academic">🏫 Academic</option>
-                  <option value="hostel">🏠 Hostel</option>
-                  <option value="staff">🧰 Staff</option>
-                </select>
+                <div className="w-full px-4 py-2 border-2 border-gray-300 bg-gray-100 rounded-lg text-gray-700 font-medium">
+                  {oldComplaintForm.type === "academic" && "🏫 Academic"}
+                  {oldComplaintForm.type === "hostel" && "🏠 Hostel"}
+                  {oldComplaintForm.type === "staff" && "🧰 Staff"}
+                  <span className="text-xs text-gray-500 ml-2">(Auto-selected based on your role)</span>
+                </div>
+                <input type="hidden" value={oldComplaintForm.type} required />
               </div>
 
               {/* Student Name */}
