@@ -1,6 +1,7 @@
 const Complaint = require("../models/complaint");
 const User = require("../models/user");
 const ComplaintLog = require("../models/complaintLog");
+const bcrypt = require("bcryptjs");
 const { logComplaintAction } = require("../utils/complaintLogger");
 const {
   sendComplaintNotificationToAdmin,
@@ -735,14 +736,17 @@ const addOldComplaint = async (req, res) => {
       });
     }
 
-    // Find or create a dummy user for the student
+    // Find or create a user for the student
     let student = await User.findOne({ email: studentEmail });
     if (!student) {
       // Create a temporary user record for historical complaint
+      // Default password: student123 (students can change it after first login)
+      const hashedPassword = await bcrypt.hash("student123", 10);
+      
       student = new User({
         name: studentName,
         email: studentEmail,
-        password: "historical_record", // Not a real password
+        password: hashedPassword,
         role: "student",
         department: "Historical Record",
       });

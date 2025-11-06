@@ -665,6 +665,14 @@ const MediumLevelDashboard = () => {
                   placeholder="student@email.com"
                   required
                 />
+                <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs text-blue-700">
+                    ℹ️ <strong>Note:</strong> If the student doesn't have an account, one will be created automatically.
+                    Default password: <code className="bg-blue-100 px-1 py-0.5 rounded">student123</code>
+                    <br />
+                    The student can login with this email and password to view their complaint.
+                  </p>
+                </div>
               </div>
 
               {/* Custom Date & Time */}
