@@ -6,7 +6,7 @@ export const AppContext = createContext();
 
 // Create axios instance with interceptors
 const api = axios.create({
-  baseURL: "http://localhost:9000"
+  baseURL: "https://grievance-system-u2c5.onrender.com"
 });
 
 // Add request interceptor to always include token
@@ -40,7 +40,7 @@ const AppContextProvider = (props) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
-  const backendUrl = "http://localhost:9000";
+  const backendUrl = "https://grievance-system-u2c5.onrender.com";
 
   // Set axios default authorization header
   useEffect(() => {
