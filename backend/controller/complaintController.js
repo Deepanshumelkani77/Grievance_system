@@ -2,6 +2,13 @@ const Complaint = require("../models/complaint");
 const User = require("../models/user");
 const ComplaintLog = require("../models/complaintLog");
 const { logComplaintAction } = require("../utils/complaintLogger");
+const {
+  sendComplaintNotificationToAdmin,
+  sendComplaintAcceptedEmail,
+  sendComplaintRejectedEmail,
+  sendComplaintResolvedEmail,
+  sendComplaintEscalatedToDirectorEmail,
+} = require("../utils/emailService");
 
 // Submit a new complaint
 const submitComplaint = async (req, res) => {
@@ -68,12 +75,21 @@ const submitComplaint = async (req, res) => {
     await newComplaint.populate("createdBy", "name email role department");
     await newComplaint.populate("assignedTo", "name email role");
 
-    // Send response
+    // Send response immediately
     res.status(201).json({
       success: true,
       message: "Complaint submitted successfully",
       complaint: newComplaint,
     });
+
+    // Send email notification asynchronously (non-blocking)
+    if (newComplaint.assignedTo && newComplaint.assignedTo.email) {
+      sendComplaintNotificationToAdmin(
+        newComplaint,
+        newComplaint.assignedTo.email,
+        newComplaint.assignedTo.name
+      ).catch(err => console.error("Email error:", err.message));
+    }
   } catch (error) {
     console.error("Submit complaint error:", error);
     res.status(500).json({
@@ -279,12 +295,25 @@ const rejectComplaint = async (req, res) => {
       remarks: reason || "Complaint rejected by admin",
     });
 
-    // Send response
+    // Populate user details for email
+    await complaint.populate("createdBy", "name email");
+
+    // Send response immediately
     res.status(200).json({
       success: true,
       message: "Complaint rejected successfully",
       complaint,
     });
+
+    // Send email notification asynchronously (non-blocking)
+    if (complaint.createdBy && complaint.createdBy.email) {
+      sendComplaintRejectedEmail(
+        complaint,
+        complaint.createdBy.email,
+        complaint.createdBy.name,
+        reason
+      ).catch(err => console.error("Email error:", err.message));
+    }
   } catch (error) {
     console.error("Reject complaint error:", error);
     res.status(500).json({
@@ -350,12 +379,24 @@ const acceptComplaint = async (req, res) => {
       remarks: "Complaint accepted by admin",
     });
 
-    // Send response
+    // Populate user details for email
+    await complaint.populate("createdBy", "name email");
+
+    // Send response immediately
     res.status(200).json({
       success: true,
       message: "Complaint accepted successfully",
       complaint,
     });
+
+    // Send email notification asynchronously (non-blocking)
+    if (complaint.createdBy && complaint.createdBy.email) {
+      sendComplaintAcceptedEmail(
+        complaint,
+        complaint.createdBy.email,
+        complaint.createdBy.name
+      ).catch(err => console.error("Email error:", err.message));
+    }
   } catch (error) {
     console.error("Accept complaint error:", error);
     res.status(500).json({
@@ -427,12 +468,25 @@ const resolveComplaint = async (req, res) => {
       remarks: response || "Complaint resolved",
     });
 
-    // Send response
+    // Populate user details for email
+    await complaint.populate("createdBy", "name email");
+
+    // Send response immediately
     res.status(200).json({
       success: true,
       message: "Complaint completed successfully",
       complaint,
     });
+
+    // Send email notification asynchronously (non-blocking)
+    if (complaint.createdBy && complaint.createdBy.email) {
+      sendComplaintResolvedEmail(
+        complaint,
+        complaint.createdBy.email,
+        complaint.createdBy.name,
+        response
+      ).catch(err => console.error("Email error:", err.message));
+    }
   } catch (error) {
     console.error("Resolve complaint error:", error);
     res.status(500).json({
@@ -510,12 +564,29 @@ const escalateComplaint = async (req, res) => {
       remarks: "Complaint escalated to Director",
     });
 
-    // Send response
+    // Populate complaint details for email
+    await complaint.populate("createdBy", "name email role department");
+
+    // Get escalating user details
+    const escalatingUser = await User.findById(userId);
+    const escalatedBy = `${escalatingUser.name} (${escalatingUser.role.toUpperCase()})`;
+
+    // Send response immediately
     res.status(200).json({
       success: true,
       message: "Complaint escalated to Director successfully",
       complaint,
     });
+
+    // Send email notification asynchronously (non-blocking)
+    if (director.email) {
+      sendComplaintEscalatedToDirectorEmail(
+        complaint,
+        director.email,
+        director.name,
+        escalatedBy
+      ).catch(err => console.error("Email error:", err.message));
+    }
   } catch (error) {
     console.error("Escalate complaint error:", error);
     res.status(500).json({
