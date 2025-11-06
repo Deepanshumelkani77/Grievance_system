@@ -16,10 +16,21 @@ const Signup = ({ setShowSignup }) => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    // If role changes to faculty or staff, clear department
+    if (name === "role" && (value === "faculty" || value === "staff")) {
+      setFormData({
+        ...formData,
+        [name]: value,
+        department: "N/A", // Set default value for non-students
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -28,8 +39,17 @@ const Signup = ({ setShowSignup }) => {
     setLoading(true);
 
     // Validation
-    if (!formData.name || !formData.email || !formData.password || !formData.department) {
+    if (!formData.name || !formData.email || !formData.password) {
       const errorMsg = "Please fill in all fields";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setLoading(false);
+      return;
+    }
+
+    // Validate department only for students
+    if (formData.role === "student" && !formData.department) {
+      const errorMsg = "Please select your branch";
       setError(errorMsg);
       toast.error(errorMsg);
       setLoading(false);
@@ -184,29 +204,30 @@ const Signup = ({ setShowSignup }) => {
                 />
               </div>
 
-              {/* Role and Branch in one row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="role" className="block text-sm font-semibold text-gray-700">
-                    I am a
-                  </label>
-                  <select
-                    id="role"
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 cursor-pointer bg-gray-50 focus:bg-white"
-                    required
-                  >
-                    <option value="student">Student</option>
-                    <option value="faculty">Faculty</option>
-                    <option value="staff">Staff</option>
-                  </select>
-                </div>
+              {/* Role Selection */}
+              <div className="space-y-2">
+                <label htmlFor="role" className="block text-sm font-semibold text-gray-700">
+                  I am a
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 cursor-pointer bg-gray-50 focus:bg-white"
+                  required
+                >
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="staff">Staff</option>
+                </select>
+              </div>
 
+              {/* Branch Selection - Only for Students */}
+              {formData.role === "student" && (
                 <div className="space-y-2">
                   <label htmlFor="department" className="block text-sm font-semibold text-gray-700">
-                    Branch
+                    Branch <span className="text-red-500">*</span>
                   </label>
                   <select
                     id="department"
@@ -223,7 +244,7 @@ const Signup = ({ setShowSignup }) => {
                     <option value="MCA">MCA</option>
                   </select>
                 </div>
-              </div>
+              )}
 
               <div className="space-y-2">
                 <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
