@@ -28,7 +28,7 @@ const seedData = async () => {
       },
       {
         name: "HOD Computer Science",
-        email: "hustlewithdev77@gmail.com",
+        email: "sandeshtripathi@birlainstitute.com",
         password: hashedPassword,
         role: "hod",
         department: "Computer Science",
@@ -42,14 +42,14 @@ const seedData = async () => {
       },
       {
         name: "Registrar",
-        email: "registrar@college.edu",
+        email: "registrar@birlainstitute.co.in",
         password: hashedPassword,
         role: "registrar",
         department: "Administration",
       },
       {
         name: "Chief Hostel Warden",
-        email: "chief.hostel.warden@college.edu",
+        email: "neeraj@birlainstitute.co.in",
         password: hashedPassword,
         role: "chief_hostel_warden",
         department: "Hostel",
