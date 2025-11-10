@@ -6,7 +6,7 @@ export const AppContext = createContext();
 
 // Create axios instance with interceptors
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL 
+  baseURL: "http://89.233.104.66:9000"
 });
 
 // Add request interceptor to always include token
@@ -40,8 +40,7 @@ const AppContextProvider = (props) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL 
-
+  const backendUrl = "http://89.233.104.66:9000"
   // Set axios default authorization header
   useEffect(() => {
     if (token) {
