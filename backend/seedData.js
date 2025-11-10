@@ -21,7 +21,7 @@ const seedData = async () => {
     const adminUsers = [
       {
         name: "Director",
-        email: "heymayank69@gmail.com",
+        email: "director@birlainstitute.co.in",
         password: hashedPassword,
         role: "director",
         department: "Administration",
