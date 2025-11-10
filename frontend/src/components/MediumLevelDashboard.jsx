@@ -343,8 +343,8 @@ const MediumLevelDashboard = () => {
           </ul>
         </div>
 
-        {/* Add Old Complaint Button */}
-        <div className="mb-6">
+        {/* Add Old Complaint Button - TEMPORARILY HIDDEN */}
+        {/* <div className="mb-6">
           <button
             onClick={() => {
               setOldComplaintForm({
@@ -365,7 +365,7 @@ const MediumLevelDashboard = () => {
             Add Old/Historical Complaint
           </button>
           <p className="text-sm text-gray-500 mt-2">Manually add past complaints with custom dates for record-keeping</p>
-        </div>
+        </div> */}
 
         {/* Complaints List */}
         <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-sm border border-gray-200">

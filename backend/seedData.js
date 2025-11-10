@@ -34,11 +34,18 @@ const seedData = async () => {
         department: "Computer Science",
       },
       {
-        name: "HOD Mechanical",
-        email: "hod.mech@college.edu",
+        name: "HOD Electronic and Communication",
+        email: "anilchaurasia@birlainstitute.co.in",
         password: hashedPassword,
         role: "hod",
-        department: "Mechanical",
+        department: "Electronic and Communication",
+      },
+      {
+        name: "HOD MCA",
+        email: "sitangshudey@birlainstitute.co.in",
+        password: hashedPassword,
+        role: "hod",
+        department: "MCA",
       },
       {
         name: "Registrar",
