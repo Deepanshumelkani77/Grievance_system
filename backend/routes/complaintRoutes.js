@@ -30,7 +30,7 @@ router.put("/:complaintId/escalate", authenticate, authorize("hod", "registrar",
 
 // Complaint logs routes
 router.get("/logs/all", authenticate, authorize("director"), getAllLogs);
-router.get("/:complaintId/logs", authenticate, getComplaintLogs);
+router.get("/:id/logs", authenticate, getComplaintLogs);
 
 // Add old complaint manually (middle-level admins only)
 router.post("/add-old", authenticate, authorize("hod", "registrar", "chief_hostel_warden"), addOldComplaint);

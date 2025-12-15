@@ -660,12 +660,10 @@ const getAllLogs = async (req, res) => {
 // Get logs for a specific complaint
 const getComplaintLogs = async (req, res) => {
   try {
-    const { complaintId } = req.params;
-    const userId = req.userId;
-    const userRole = req.userRole;
+    const { id } = req.params;
 
-    // Check if complaint exists
-    const complaint = await Complaint.findById(complaintId);
+    // Verify the complaint exists
+    const complaint = await Complaint.findById(id);
     if (!complaint) {
       return res.status(404).json({
         success: false,
@@ -673,36 +671,19 @@ const getComplaintLogs = async (req, res) => {
       });
     }
 
-    // Check access - user must be creator, assigned to, or director
-    const isCreator = complaint.createdBy?.toString() === userId;
-    const isAssigned = complaint.assignedTo?.toString() === userId;
-    const isDirector = userRole === "director";
-
-    if (!isCreator && !isAssigned && !isDirector) {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. You don't have permission to view these logs.",
-      });
-    }
-
-    const logs = await ComplaintLog.find({ complaint: complaintId })
-      .populate("performedBy", "name email role")
-      .populate("assignedTo", "name role")
-      .populate("escalatedTo", "name role")
-      .sort({ timestamp: 1 }); // Chronological order
+    // Get logs for the complaint and populate user details
+    const logs = await ComplaintLog.find({ complaint: id })
+      .populate("performedBy", "name email role department")
+      .populate("assignedTo", "name email role")
+      .populate("escalatedTo", "name email role")
+      .sort({ timestamp: -1 });
 
     res.status(200).json({
       success: true,
       logs,
-      complaint: {
-        id: complaint._id,
-        title: complaint.title,
-        type: complaint.type,
-        status: complaint.status,
-      },
     });
   } catch (error) {
-    console.error("Get complaint logs error:", error);
+    console.error("Error fetching complaint logs:", error);
     res.status(500).json({
       success: false,
       message: "Error fetching complaint logs",
