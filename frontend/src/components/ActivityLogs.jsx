@@ -33,7 +33,7 @@ const ActivityLogs = () => {
   const fetchComplaintLogs = async (complaintId) => {
     try {
       setLogsLoading(true);
-      const response = await api.get(`/api/complaints/${complaintId}/activity-logs`);
+      const response = await api.get(`/api/complaints/${complaintId}/logs`);
       if (response.data.success) {
         setComplaintLogs(response.data.logs);
       }

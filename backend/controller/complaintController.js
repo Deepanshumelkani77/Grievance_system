@@ -14,7 +14,7 @@ const {
 // Submit a new complaint
 const submitComplaint = async (req, res) => {
   try {
-    const { title, description, type, department } = req.body;
+    const { title, description, type } = req.body;
     const userId = req.userId;
 
     // Validate input
@@ -33,31 +33,13 @@ const submitComplaint = async (req, res) => {
       });
     }
 
-    // Validate department for academic complaints
-    if (type === "academic" && !department) {
-      return res.status(400).json({
-        success: false,
-        message: "Department is required for academic complaints",
-      });
-    }
-
     // Find the appropriate authority to assign based on type
     let assignedTo = null;
     
     if (type === "academic") {
-      // Find HOD for the specific department
-      const hod = await User.findOne({ 
-        role: "hod",
-        department: department 
-      });
-      
-      if (!hod) {
-        return res.status(400).json({
-          success: false,
-          message: `No HOD found for ${department} department`,
-        });
-      }
-      assignedTo = hod._id;
+      // Assign to HOD (you can make this more specific by department if needed)
+      const hod = await User.findOne({ role: "hod" });
+      if (hod) assignedTo = hod._id;
     } else if (type === "hostel") {
       // Assign to Chief Hostel Warden
       const chief_hostel_warden = await User.findOne({ role: "chief_hostel_warden" });
@@ -68,22 +50,16 @@ const submitComplaint = async (req, res) => {
       if (registrar) assignedTo = registrar._id;
     }
 
-    // Create new complaint with department for academic complaints
-    const complaintData = {
+    // Create new complaint
+    const newComplaint = new Complaint({
       title,
       description,
       type,
       createdBy: userId,
       assignedTo,
       status: "Pending",
-    };
+    });
 
-    // Add department for academic complaints
-    if (type === "academic") {
-      complaintData.department = department;
-    }
-
-    const newComplaint = new Complaint(complaintData);
     await newComplaint.save();
 
     // Log complaint submission
@@ -660,10 +636,12 @@ const getAllLogs = async (req, res) => {
 // Get logs for a specific complaint
 const getComplaintLogs = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { complaintId } = req.params;
+    const userId = req.userId;
+    const userRole = req.userRole;
 
-    // Verify the complaint exists
-    const complaint = await Complaint.findById(id);
+    // Check if complaint exists
+    const complaint = await Complaint.findById(complaintId);
     if (!complaint) {
       return res.status(404).json({
         success: false,
@@ -671,19 +649,36 @@ const getComplaintLogs = async (req, res) => {
       });
     }
 
-    // Get logs for the complaint and populate user details
-    const logs = await ComplaintLog.find({ complaint: id })
-      .populate("performedBy", "name email role department")
-      .populate("assignedTo", "name email role")
-      .populate("escalatedTo", "name email role")
-      .sort({ timestamp: -1 });
+    // Check access - user must be creator, assigned to, or director
+    const isCreator = complaint.createdBy?.toString() === userId;
+    const isAssigned = complaint.assignedTo?.toString() === userId;
+    const isDirector = userRole === "director";
+
+    if (!isCreator && !isAssigned && !isDirector) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. You don't have permission to view these logs.",
+      });
+    }
+
+    const logs = await ComplaintLog.find({ complaint: complaintId })
+      .populate("performedBy", "name email role")
+      .populate("assignedTo", "name role")
+      .populate("escalatedTo", "name role")
+      .sort({ timestamp: 1 }); // Chronological order
 
     res.status(200).json({
       success: true,
       logs,
+      complaint: {
+        id: complaint._id,
+        title: complaint.title,
+        type: complaint.type,
+        status: complaint.status,
+      },
     });
   } catch (error) {
-    console.error("Error fetching complaint logs:", error);
+    console.error("Get complaint logs error:", error);
     res.status(500).json({
       success: false,
       message: "Error fetching complaint logs",
