@@ -14,7 +14,7 @@ const {
 // Submit a new complaint
 const submitComplaint = async (req, res) => {
   try {
-    const { title, description, type } = req.body;
+    const { title, description, type, department } = req.body;
     const userId = req.userId;
 
     // Validate input
@@ -33,13 +33,31 @@ const submitComplaint = async (req, res) => {
       });
     }
 
+    // Validate department for academic complaints
+    if (type === "academic" && !department) {
+      return res.status(400).json({
+        success: false,
+        message: "Department is required for academic complaints",
+      });
+    }
+
     // Find the appropriate authority to assign based on type
     let assignedTo = null;
     
     if (type === "academic") {
-      // Assign to HOD (you can make this more specific by department if needed)
-      const hod = await User.findOne({ role: "hod" });
-      if (hod) assignedTo = hod._id;
+      // Find HOD for the specific department
+      const hod = await User.findOne({ 
+        role: "hod",
+        department: department 
+      });
+      
+      if (!hod) {
+        return res.status(400).json({
+          success: false,
+          message: `No HOD found for ${department} department`,
+        });
+      }
+      assignedTo = hod._id;
     } else if (type === "hostel") {
       // Assign to Chief Hostel Warden
       const chief_hostel_warden = await User.findOne({ role: "chief_hostel_warden" });
@@ -50,16 +68,22 @@ const submitComplaint = async (req, res) => {
       if (registrar) assignedTo = registrar._id;
     }
 
-    // Create new complaint
-    const newComplaint = new Complaint({
+    // Create new complaint with department for academic complaints
+    const complaintData = {
       title,
       description,
       type,
       createdBy: userId,
       assignedTo,
       status: "Pending",
-    });
+    };
 
+    // Add department for academic complaints
+    if (type === "academic") {
+      complaintData.department = department;
+    }
+
+    const newComplaint = new Complaint(complaintData);
     await newComplaint.save();
 
     // Log complaint submission
